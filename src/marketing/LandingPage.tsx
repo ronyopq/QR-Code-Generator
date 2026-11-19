@@ -11,9 +11,26 @@ import type { LandingRoute } from './routes'
 import { findRoute } from './routes'
 import { SITE } from './content'
 
-/** `/wifi-qr-code` → `../wifi-qr-code` (works on Vercel and on a Pages subpath). */
-export function rel(path: string): string {
-  return path === '/' ? '../' : `..${path}`
+/**
+ * Relative prefixes, so the same file works at `qrforge-bd.vercel.app/wifi-qr-code/`
+ * and at `ronyopq.github.io/QR-Code-Generator/wifi-qr-code/`.
+ *
+ * `/wifi-qr-code` lives one directory deep → `../`; `/how-to/print-qr-codes`
+ * lives two → `../../`.
+ */
+export function depth(path: string): number {
+  return path.split('/').filter(Boolean).length
+}
+
+/** The studio's URL as seen from this page. */
+export function studioHref(path: string, typeId?: string): string {
+  const up = '../'.repeat(depth(path))
+  return typeId ? `${up}?type=${typeId}` : up
+}
+
+/** Absolute-in-site path → path relative to the page being rendered. */
+export function rel(from: string, to: string): string {
+  return '../'.repeat(depth(from)) + to.replace(/^\//, '')
 }
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -41,9 +58,15 @@ export default function LandingPage({ route }: { route: LandingRoute }) {
         <nav aria-label="Breadcrumb" className="pt-5 font-mono text-[9.5px] uppercase tracking-[0.16em] text-subtle">
           <ol className="flex items-center gap-1.5">
             <li>
-              <a className="hover:text-fg" href="../">QRForge</a>
+              <a className="hover:text-fg" href={'../'.repeat(depth(route.path))}>QRForge</a>
             </li>
             <li aria-hidden="true">/</li>
+            {route.group && (
+              <>
+                <li className="text-muted">{route.group}</li>
+                <li aria-hidden="true">/</li>
+              </>
+            )}
             <li aria-current="page" className="text-muted">{route.navLabel}</li>
           </ol>
         </nav>
@@ -101,7 +124,7 @@ export default function LandingPage({ route }: { route: LandingRoute }) {
 
           <section id="faq" className="mt-10">
             <h2 className="text-[19px] font-semibold tracking-[-0.02em] sm:text-[22px]">
-              {route.navLabel} questions
+              {route.faqHeading ?? `${route.navLabel} questions`}
             </h2>
             <div className="mt-3 divide-y divide-line rounded-xl border border-line bg-surface">
               {route.faq.map((item) => (
@@ -117,12 +140,12 @@ export default function LandingPage({ route }: { route: LandingRoute }) {
 
           {related.length > 0 && (
             <section className="mt-10">
-              <h2 className="font-mono text-[9.5px] uppercase tracking-[0.16em] text-subtle">More QR codes</h2>
+              <h2 className="font-mono text-[9.5px] uppercase tracking-[0.16em] text-subtle">{route.relatedHeading ?? 'More QR codes'}</h2>
               <ul className="mt-3 grid gap-2 sm:grid-cols-2">
                 {related.map((r) => (
                   <li key={r.path}>
                     <a
-                      href={rel(r.path)}
+                      href={rel(route.path, r.path)}
                       className="block rounded-lg border border-line bg-surface p-3 transition-colors hover:border-line-strong"
                     >
                       <span className="block text-[13px] font-semibold text-fg">{r.navLabel}</span>
@@ -135,9 +158,13 @@ export default function LandingPage({ route }: { route: LandingRoute }) {
           )}
 
           <StudioCta
-            href={`../?type=${route.typeId}`}
-            label={`Make your ${route.navLabel.toLowerCase()} now`}
-            detail="The studio opens with this type preselected and the fields ready. Everything renders in your browser — no account, no upload, no watermark."
+            href={studioHref(route.path, route.typeId)}
+            label={route.ctaLabel ?? 'Make a QR code'}
+            detail={
+              route.typeId
+                ? 'The studio opens with this type preselected and the fields ready. Everything renders in your browser — no account, no upload, no watermark.'
+                : 'The studio opens with the fields ready. Everything renders in your browser — no account, no upload, no watermark.'
+            }
           />
 
           <p className="mt-8 font-mono text-[9.5px] uppercase tracking-[0.14em] text-subtle">

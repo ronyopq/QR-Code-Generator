@@ -24,8 +24,12 @@ export interface LandingSection {
 export interface LandingRoute {
   /** URL path without a trailing slash, e.g. `/wifi-qr-code`. */
   path: string
-  /** QR type this page links into the studio with (`/?type=<typeId>`). */
-  typeId: string
+  /**
+   * QR type this page links into the studio with (`/?type=<typeId>`). Omit for
+   * pages that are not a payload type — a how-to guide about printing is not
+   * "the PDF type", so its CTA opens the studio without preselection.
+   */
+  typeId?: string
   /** ≤ 60 characters; the page's <title>. */
   title: string
   /** ≤ 160 characters; meta description and og:description. */
@@ -35,6 +39,14 @@ export interface LandingRoute {
   lede: string
   /** Short label used on the home page and in cross-links. */
   navLabel: string
+  /** Verb-first CTA on the page; defaults to "Make a QR code". */
+  ctaLabel?: string
+  /** Breadcrumb section, e.g. `How-to`. Omit for top-level type pages. */
+  group?: string
+  /** Heading above the FAQ list; defaults to "<navLabel> questions". */
+  faqHeading?: string
+  /** Heading above the cross-link grid; defaults to "More QR codes". */
+  relatedHeading?: string
   sections: LandingSection[]
   howTo: { name: string; steps: { name: string; text: string }[] }
   faq: Faq[]
@@ -1445,6 +1457,295 @@ export const LANDING_ROUTES: LandingRoute[] = [
     updated: UPDATED,
   },
 
+  // ---------------------------------------------------------------- how-to
+  {
+    path: '/how-to/size-a-qr-code',
+    title: 'How Big Should a QR Code Be? Print Size Table | QRForge',
+    description:
+      'A QR code needs about 1 cm of printed width per 10 cm of scanning distance, and no module thinner than 0.4 mm. A table of sizes that actually scan.',
+    h1: 'How big should a QR code be? A print size table',
+    lede:
+      'Rule of thumb first: the printed code should be about one tenth of the distance it is scanned from, and no single module in it should be thinner than 0.4 mm. A business card code is 1.5–2 cm, a table tent 3–4 cm, a door poster 8–10 cm.',
+    navLabel: 'QR code size',
+    ctaLabel: 'Size a QR code now',
+    group: 'How-to',
+    faqHeading: 'QR code size questions',
+    relatedHeading: 'Related guides',
+    sections: [
+      {
+        heading: 'The 10:1 rule, and where it comes from',
+        paragraphs: [
+          'A phone camera needs roughly ten pixels across a module to lock on reliably. At arm’s length — 30 cm — that works out to a code about 3 cm wide; at 3 metres, about 30 cm. The rule is linear, so doubling the scanning distance doubles the size you need.',
+          'It holds for a short payload. A URL with tracking parameters can triple the module count, and then the same printed width gives you modules a third as wide. That is why two codes of identical size can behave completely differently: what matters is the module, not the square.',
+        ],
+        bullets: [
+          'Business card, scanned at 20 cm: 1.5–2 cm',
+          'Table tent or counter card, 30–40 cm: 3–4 cm',
+          'A4 poster by a door, 1–2 m: 8–12 cm',
+          'Shop window at 2–3 m: 20–30 cm',
+        ],
+      },
+      {
+        heading: 'Work backwards from the module',
+        paragraphs: [
+          'A version-3 code is 29 modules across. At the 0.4 mm floor that is a 1.2 cm square — small enough for a business card. A long URL pushes you to version 10 (57 modules), so the same floor now demands 2.3 cm, and a comfortable 0.6 mm module demands 3.4 cm.',
+          'QRForge prints the module size in millimetres under the preview for whatever width you type, and warns when it drops below 0.4 mm. If the warning appears, shorten the URL, drop the tracking parameters, or make the code bigger — those are the only three fixes, and the first one is free.',
+        ],
+      },
+      {
+        heading: 'Screens are measured differently',
+        paragraphs: [
+          'On a screen there is no paper, so the unit is pixels: at least one pixel per module, two to be safe, and a high-DPI phone screen counts double. A 300 px wide code with 33 modules is fine at 30 cm; the same code shown in a 120 px thumbnail is not — and that is the usual reason a QR code fails inside an email or a slide deck.',
+          'Never scale a screenshot up. Interpolation softens the edges and the module count no longer matches the pixels, which is exactly what the decoder is trying to measure.',
+        ],
+      },
+    ],
+    howTo: {
+      name: 'How to size a QR code for print',
+      steps: [
+        { name: 'Measure the real scanning distance', text: 'Stand where a person will stand and measure to where the code will hang. Half a metre for a table card, two metres for a poster.' },
+        { name: 'Divide by ten for a starting width', text: 'A code scanned from 1 m starts at 10 cm. Round up, never down — the rule assumes a clean print and decent light.' },
+        { name: 'Check the module size, not just the width', text: 'Multiply module count by module size and confirm each module is at least 0.4 mm. Dense codes need a larger print for the same reliability.' },
+        { name: 'Print one and scan it from the real distance', text: 'One test print beats any table. If it hesitates, add 30% to the width before committing to a run.' },
+      ],
+    },
+    faq: [
+      {
+        q: 'How small can a QR code be?',
+        a: 'Around 1.5 cm for a short payload scanned at 20 cm, and never under 1 cm — below that the modules fall under the printable resolution of most printers and phone cameras start guessing instead of reading.',
+      },
+      {
+        q: 'Does a longer URL need a bigger QR code?',
+        a: 'Yes. A longer URL adds modules, and with a fixed 0.4 mm module floor the printed square grows with them. Shortening the link is the cheapest way to keep the code small.',
+      },
+      {
+        q: 'How big should a QR code be on a poster or billboard?',
+        a: 'Follow the 10:1 rule: a poster scanned from 2 m wants roughly 20 cm, a billboard read from 20 m wants metres. Printed at that scale the module is far above the minimum, which is why big codes scan easily.',
+      },
+      {
+        q: 'Does DPI matter for a QR code?',
+        a: 'It matters through the module. At 300 dpi a 0.4 mm module is about 4.7 pixels, which is comfortable; a 72 dpi export gives 1.1 pixels and a soft edge, so export at 300 dpi or, better, use SVG.',
+      },
+    ],
+    related: ['/how-to/print-qr-codes', '/how-to/qr-code-with-logo', '/wifi-qr-code'],
+    updated: UPDATED,
+  },
+  {
+    path: '/how-to/qr-code-with-logo',
+    title: 'QR Code With a Logo: How to Keep It Scannable | QRForge',
+    description:
+      'A logo is only safe because of error correction. Keep it under a quarter of the area, centred, off the three corner squares, and use level H. Here is why.',
+    h1: 'Putting a logo in a QR code without breaking it',
+    lede:
+      'A logo works because a QR code carries redundant data: at error-correction level H, up to 30% of the pattern can be lost and the code still reads. Cover the centre third with a logo, keep the three corner squares clear, and the code stays usable.',
+    navLabel: 'QR code with logo',
+    ctaLabel: 'Try it with your logo',
+    group: 'How-to',
+    faqHeading: 'Logo questions',
+    relatedHeading: 'Related guides',
+    sections: [
+      {
+        heading: 'Error correction is the whole trick',
+        paragraphs: [
+          'The four levels — L, M, Q, H — store 7%, 15%, 25% and 30% redundancy. Level H lets a decoder reconstruct damaged modules, which is exactly what a logo covering the middle is: controlled damage. At level L, a logo is not styling, it is a bet.',
+          'The budget is shared. A logo uses 15% of the area, a scuff another 5%, a crease through the middle another 10% — and at H you have just run out. Codes that live on a table, in a pocket or on packaging deserve the margin, so keep the logo under a quarter of the width and stay well inside 30%.',
+        ],
+      },
+      {
+        heading: 'Three places you must never draw',
+        paragraphs: [
+          'The three finder patterns — the big squares in the top-left, top-right and bottom-left corners — are how a decoder finds the code and works out its orientation. Cover one and the camera will not even recognise the shape, no matter how much redundancy the data has.',
+          'The alignment pattern near the bottom-right and the quiet zone around the edge matter almost as much. A logo bleeding to the edge, or a background that removes the white border, breaks the timing pattern that tells the decoder how wide a module is.',
+        ],
+        bullets: [
+          'Logo inside the middle third, never over a corner square',
+          'At most a quarter of the code’s width — smaller if the payload is long',
+          'Quiet zone: at least four modules of white on every side',
+          'Level H, and still at least 0.4 mm per module in print',
+        ],
+      },
+      {
+        heading: 'What the logo costs you',
+        paragraphs: [
+          'Two things. First, density: the same payload at level H needs more modules than at level L, so the printed code gets bigger or the modules get smaller — and the 0.4 mm floor decides which. Second, margin for error: a logo code has spent its redundancy budget on design, so a scratched print or a low-light scan that a plain code shrugs off may fail.',
+          'The fix is boring and effective: shrink the payload first. A short link instead of a 90-character URL buys back more modules than any setting.',
+        ],
+      },
+    ],
+    howTo: {
+      name: 'How to add a logo to a QR code',
+      steps: [
+        { name: 'Set error correction to level H', text: 'Without it a logo is unsafe. H tolerates up to 30% loss, which is the budget the logo spends.' },
+        { name: 'Shorten the payload before styling', text: 'A shorter URL means fewer modules and wider ones, so the logo covers fewer of them.' },
+        { name: 'Centre the logo, under a quarter of the width', text: 'Keep it clear of the three corner squares, the alignment pattern and the quiet zone.' },
+        { name: 'Scan it with three phones from print distance', text: 'Test the printed sheet, not the screen — paper, light and camera differ more than any preview shows.' },
+      ],
+    },
+    faq: [
+      {
+        q: 'Does a logo make a QR code unscannable?',
+        a: 'Not if you use level H, keep the logo under about a quarter of the width and leave the three corner squares alone. Cover a corner square or a third of the area and no error-correction level will save it.',
+      },
+      {
+        q: 'How much of a QR code can a logo cover?',
+        a: 'A quarter of the width — roughly 6% of the area — is comfortable, and 30% of the area is the absolute ceiling at level H with nothing else damaged. Treat the ceiling as a limit, not a target.',
+      },
+      {
+        q: 'Should I use level H or Q for a logo code?',
+        a: 'H if the code will be printed, handled or scanned in poor light. Q is acceptable only for a screen-only code with a small logo, because Q leaves 25% redundancy and the logo spends most of it.',
+      },
+      {
+        q: 'Is my logo uploaded anywhere?',
+        a: 'No. QRForge draws the logo into the code in your browser, so the image never leaves the device — the same rule as the rest of the app, which has no server and no account.',
+      },
+    ],
+    related: ['/how-to/qr-not-scanning', '/how-to/size-a-qr-code', '/menu-qr-code'],
+    updated: UPDATED,
+  },
+  {
+    path: '/how-to/qr-not-scanning',
+    title: 'QR Code Not Scanning? 8 Fixes That Work | QRForge',
+    description:
+      'A code that will not scan is almost always too small, too glossy, too low-contrast or carrying too much data. Eight checks, ordered from most to least likely.',
+    h1: 'QR code not scanning? Check these eight things, in this order',
+    lede:
+      'Most failures are physical: the code is too small for its distance, printed glossy, or inverted. Work through these eight checks in order — the first four catch the overwhelming majority, and each one takes seconds.',
+    navLabel: 'QR code not scanning',
+    ctaLabel: 'Test your code',
+    group: 'How-to',
+    faqHeading: 'Scanning problems, answered',
+    relatedHeading: 'Related guides',
+    sections: [
+      {
+        heading: 'The four physical faults',
+        paragraphs: [
+          'One: too small for the distance. If the module is under 0.4 mm, or the code under a tenth of the scanning distance, the camera is guessing. Two: too little contrast — grey on white, white on yellow, or a dark brand colour that reads as near-black to a printer but not to a camera.',
+          'Three: reflection. Glossy paper, a laminated card under a ceiling light, or a code behind glass will throw a bright band across the modules. Matte stock and a 15° tilt fix more codes than any software setting. Four: damage and curvature — a crease through the middle or a code wrapped around a bottle distorts the geometry the decoder relies on.',
+        ],
+      },
+      {
+        heading: 'The four digital faults',
+        paragraphs: [
+          'Five: inverted colours. A light code on a dark background is not reliably supported; many decoders refuse it outright. Six: the quiet zone is gone — cropped tight, or placed on a coloured panel with no white margin, so the decoder cannot find the edge.',
+          'Seven: the payload is too dense. A 400-character URL with UTM parameters produces a fine mesh that needs a steady hand and good light. Shorten the link and the problem usually disappears. Eight: the payload itself is malformed — a missing https://, a phone number with spaces and brackets, a WiFi string with a semicolon inside the password, or an emoji in a field that only accepts Latin characters.',
+        ],
+        bullets: [
+          'Module ≥ 0.4 mm in print, ≥ 1 px on screen',
+          'Dark on light, never light on dark',
+          'Four modules of quiet zone on all four sides',
+          'Shorten the URL before you enlarge the code',
+        ],
+      },
+      {
+        heading: 'Prove it before you print five hundred',
+        paragraphs: [
+          'Scan the screen code with three phones — one recent iPhone, one recent Android, one older device — from the distance the final print will be read at. That single test catches size, contrast and payload problems while they are still free to fix.',
+          'Then print one copy at final size on the final stock and scan that. Screens are emissive and forgiving; paper is not. If the test print hesitates, fix it now: the difference between a 40% scan rate and a 95% one is usually two centimetres and a matte sheet.',
+        ],
+      },
+    ],
+    howTo: {
+      name: 'How to fix a QR code that will not scan',
+      steps: [
+        { name: 'Scan it from the real distance', text: 'Most failures are size failures. If it only works up close, the module is too small for where the code hangs.' },
+        { name: 'Check contrast and reflection', text: 'Dark code on light paper, matte stock, no glare band. Tilt the phone slightly if the surface is glossy.' },
+        { name: 'Confirm the quiet zone and orientation', text: 'White margin of four modules on all sides, three corner patterns intact, no inversion.' },
+        { name: 'Shorten the payload and re-test', text: 'Fewer characters, fewer modules, wider modules. Then re-print one copy at final size before the full run.' },
+      ],
+    },
+    faq: [
+      {
+        q: 'Why does my QR code work on one phone but not another?',
+        a: 'Camera quality and decoder differ. A newer phone resolves a 0.3 mm module that an older one turns into mush, so design for the worst phone in the room rather than the best one in your hand.',
+      },
+      {
+        q: 'Can a printed QR code stop working?',
+        a: 'A static code cannot: the data is inside the pattern and no server is involved. What can stop working is the destination page, so check the URL still resolves before blaming the print.',
+      },
+      {
+        q: 'Why does my QR code scan but show nothing?',
+        a: 'The reader decoded it, so the pattern is fine — the payload is the problem. A URL without a scheme, a domain that no longer resolves, or a plain text string with no action attached all look like “nothing happens”.',
+      },
+      {
+        q: 'Does a QR code work if it is inverted?',
+        a: 'Sometimes, and that “sometimes” is the problem. Many decoders reject light-on-dark outright, so an inverted code is a coin flip across the phones in your audience. Keep dark modules on a light background.',
+      },
+    ],
+    related: ['/how-to/print-qr-codes', '/how-to/size-a-qr-code', '/how-to/qr-code-with-logo'],
+    updated: UPDATED,
+  },
+  {
+    path: '/how-to/print-qr-codes',
+    title: 'How to Print QR Codes That Scan Every Time | QRForge',
+    description:
+      'Export SVG for the print shop, keep 300 dpi as the floor, print black on matte white with a four-module quiet zone, and always test one copy at final size.',
+    h1: 'Printing QR codes: from screen to paper without losing the scan',
+    lede:
+      'Give the print shop an SVG or EPS, never a screenshot. Print pure black on matte white at the final size, keep four modules of white margin, and scan one copy before the run. Those four decisions cover almost every failure.',
+    navLabel: 'Print a QR code',
+    ctaLabel: 'Make a print-ready code',
+    group: 'How-to',
+    faqHeading: 'Printing questions',
+    relatedHeading: 'Related guides',
+    sections: [
+      {
+        heading: 'Send vector, not a picture of a code',
+        paragraphs: [
+          'An SVG scales to any width without touching the module edges — every module stays a crisp rectangle. A PNG is a grid of pixels, and the moment someone resizes it the edges soften; a JPEG adds compression artefacts along exactly the high-contrast boundaries a decoder measures.',
+          'If the shop insists on raster, send a PNG at the exact final dimensions at 300 dpi or more, and check the module math: a 0.4 mm module at 300 dpi is about 4.7 pixels, so rounding can push a thin code below the floor. Print shops that ask for “a high-res JPEG” are the reason QR codes get a bad reputation.',
+        ],
+      },
+      {
+        heading: 'Black on matte white, flat and square',
+        paragraphs: [
+          'Use pure black (K only in CMYK) on uncoated white stock. A rich black built from four inks can look muddy and, worse, register slightly differently on each pass, blurring the module edge. Off-white paper is fine; coloured paper is not.',
+          'Matte beats gloss: a glossy sheet reflects the phone’s own light straight back into the lens. Keep the four-module quiet zone white and free of the frame, badge or bleed your designer wants to add — a border touching the modules is one of the most common reasons a beautifully printed code will not read.',
+        ],
+        bullets: [
+          'SVG or EPS for the printer; PDF at 300 dpi if forced',
+          'Pure K black, matte uncoated stock',
+          'Four modules of white margin, uninterrupted',
+          'No lamination on a curved surface — it lifts and catches light',
+        ],
+      },
+      {
+        heading: 'Test at the size it will be used',
+        paragraphs: [
+          'Print one copy at 100% and scan it from the real distance, not from 20 cm over the desk. A table card lives at 40 cm, a poster at two metres, and a code that passes at 20 cm can still fail at the distance people actually stand.',
+          'For a batch of codes — one per table, one per product, one per event stand — use the A4 sheet export: six codes per page with cut marks, all at a consistent size. Consistency is what makes a print run predictable, and the sheet is generated in the browser with nothing uploaded.',
+        ],
+      },
+    ],
+    howTo: {
+      name: 'How to print a QR code properly',
+      steps: [
+        { name: 'Export SVG (or a 300 dpi PNG at final size)', text: 'Vector keeps every module sharp at any printed width. Screenshots and JPEGs are the usual culprits for a soft, unreadable code.' },
+        { name: 'Place it at the final size with its white margin', text: 'Four modules of quiet zone on all sides, nothing overlapping the edge, no frame touching the modules.' },
+        { name: 'Print black on matte white', text: 'Pure K ink, uncoated stock, no gloss and no coloured background panel.' },
+        { name: 'Scan the first copy from the real distance', text: 'Then, and only then, run the batch. One test copy costs a sheet; a bad run costs the job.' },
+      ],
+    },
+    faq: [
+      {
+        q: 'What file format should I give a print shop?',
+        a: 'SVG if they accept it, EPS if they are an older shop, PDF at 300 dpi as a fallback. Avoid JPEG entirely and avoid PNG unless it is exported at exactly the final dimensions.',
+      },
+      {
+        q: 'What DPI do I need for a printable QR code?',
+        a: '300 dpi is the working minimum, because it keeps a 0.4 mm module at about 4.7 pixels. At 150 dpi the same module is 2.4 pixels and the edges start to blur when the ink spreads.',
+      },
+      {
+        q: 'Can I print a QR code on dark paper?',
+        a: 'Only with white ink for the modules, and most decoders still expect dark-on-light. If the design demands a dark card, print the code in a white panel with the proper quiet zone instead of inverting it.',
+      },
+      {
+        q: 'Should I laminate a printed QR code?',
+        a: 'On a flat card it is fine if the film is matte. On anything curved the laminate lifts and creates exactly the reflection that kills a scan — use matte stickers or leave it uncoated.',
+      },
+    ],
+    related: ['/how-to/size-a-qr-code', '/how-to/qr-not-scanning', '/url-qr-code'],
+    updated: UPDATED,
+  },
 ]
 
 export function findRoute(path: string): LandingRoute | undefined {
