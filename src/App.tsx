@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import { QR_TYPES } from './data/qrTypes'
 import { buildPayload } from './lib/qr'
-import { downloadQR } from './lib/exporter'
+import { downloadQR } from './lib/download'
 import { addHistory, loadHistory, saveHistory } from './lib/storage'
 import { bookmarkState } from './lib/bookmark'
 import { defaultConfig, type HistoryItem, type QRConfig, type QRTypeId } from './types'

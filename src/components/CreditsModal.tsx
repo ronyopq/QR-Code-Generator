@@ -18,7 +18,6 @@ const GROUPS: { title: string; items: Credit[] }[] = [
       { name: 'jsPDF', role: 'PDF export', licence: 'MIT', url: 'https://github.com/parallax/jsPDF' },
       { name: 'JSZip', role: 'ZIP packaging for bulk + full kits', licence: 'MIT', url: 'https://github.com/Stuk/jszip' },
       { name: 'FileSaver.js', role: 'Cross-browser file downloads', licence: 'MIT', url: 'https://github.com/eligrey/FileSaver.js' },
-      { name: 'html2canvas', role: 'Raster fallback capture', licence: 'MIT', url: 'https://github.com/niklasvh/html2canvas' },
     ],
   },
   {

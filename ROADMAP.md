@@ -23,7 +23,8 @@
 
 ## ১. P0 — নির্ভরযোগ্যতা ও সত্যতা (আগে এটাই)
 
-### ১.১ এক্সপোর্টের ১৯৭ kB gzip প্রথম পেইজেই লোড হয় ★★★ · S
+### ~~১.১ এক্সপোর্টের ১৯৭ kB gzip প্রথম পেইজেই লোড হয়~~ ✅ সম্পন্ন · S
+> ঠিক হয়েছে: `src/lib/download.ts` গেটওয়ে + Bulk ZIP lazy import; প্রাথমিক JS ~৩৭৫ → ~১৭৭ kB gzip
 - **কী:** `jspdf`, `html2canvas`, `jszip`, `file-saver` — প্রথম রেন্ডারেই ডাউনলোড হয়, ব্যবহারকারী ডাউনলোড নাও করতে পারে।
 - **প্রমাণ:** `dist/index.html`-এ `modulepreload …/exporters-*.js`; `src/App.tsx:12` ও `DownloadPanel.tsx:4` স্ট্যাটিক import; চাঙ্ক ৬৬৩.৬৯ kB (১৯৭.৫৬ kB gzip)।
 - **করণীয়:** ডাউনলোড বাটনে `await import('../lib/exporter')`, `vite.config.ts` থেকে `exporters` manualChunk-এ modulepreload বন্ধ; ফরম্যাট অনুযায়ী আলাদা চাঙ্ক (PDF ↔ ZIP ↔ রাস্টার)।
@@ -38,7 +39,8 @@
 - **কী:** PDF-এ PNG ডেটা URL বসানো হয় — ছাপায় ৩০০ DPI-তে বড় হলে নরম দেখাবে।
 - **করণীয়:** ভেক্টর SVG → PDF (`svg2pdf.js`), সাথে mm-ভিত্তিক সঠিক ফিজিক্যাল সাইজ।
 
-### ১.৪ structured data-তে ভুয়া রেটিং ★★☆ · S (নৈতিক ও SEO ঝুঁকি)
+### ~~১.৪ structured data-তে ভুয়া রেটিং~~ ✅ সম্পন্ন · S (নৈতিক ও SEO ঝুঁকি)
+> ঠিক হয়েছে: `index.html` থেকে `aggregateRating` সরানো হয়েছে
 - **প্রমাণ:** `index.html:35` → `"aggregateRating": { "ratingValue": "4.9", "ratingCount": "1284" }` — বাস্তবে কোনো রিভিউ ব্যবস্থা নেই।
 - **কেন জরুরি:** Google-এর structured-data নীতি ভাঙে → ম্যানুয়াল অ্যাকশন/রিচ রেজাল্ট হারানোর ঝুঁকি।
 - **করণীয়:** রেটিং ব্লক সরানো (নিরাপদ), অথবা পরে আসল রিভিউ এলে যোগ করা।
@@ -47,7 +49,8 @@
 - **কী:** `src/lib/presence.ts` ট্রাফিক কার্ভ দিয়ে সংখ্যা বানায়; UI-তে সৎভাবে "client-side estimate" লেখা আছে (ভালো), তবে সংখ্যাটা অর্থহীন।
 - **করণীয়:** হয় "estimate" লেবেলটা আরও স্পষ্ট করা, নয়তো Supabase Realtime দিয়ে **আসল** প্রেজেন্স (ব্রাউজার ট্যাব সংযোগ) — ১ ফাইল বদল।
 
-### ১.৬ লাইসেন্স ও গভর্নেন্স ফাইল নেই ★☆☆ · S
+### ~~১.৬ লাইসেন্স ও গভর্নেন্স ফাইল নেই~~ ✅ সম্পন্ন · S
+> যোগ হয়েছে: `LICENSE` (MIT), `CONTRIBUTING.md`, `SECURITY.md`, `CHANGELOG.md`
 - **কী:** README-তে "MIT" লেখা, কিন্তু `LICENSE` ফাইল নেই; `CONTRIBUTING.md`, `SECURITY.md`, `CHANGELOG.md`, ইস্যু টেমপ্লেটও নেই।
 - **করণীয়:** MIT `LICENSE` (Rony Siddiqi), CHANGELOG (v1.0 → পরবর্তী), issue/PR টেমপ্লেট।
 
@@ -131,9 +134,9 @@
 
 ## ৭. P1 (টেকনিক্যাল) — টেস্ট, CI, কোড কোয়ালিটি
 
-- **৭.১ ইউনিট টেস্ট (Vitest)** ★★★ · M — `toStylingOptions`, `buildPayload` (২০ টাইপ), প্রিসেট ম্যাচিং, `parseCSV`, `makeEPS`। আজকের jsdom স্ক্রিপ্টগুলোই টেস্টে রূপান্তরযোগ্য।
+- **~~৭.১ ইউনিট টেস্ট (Vitest)~~** ✅ সম্পন্ন (৩৭ টেস্ট, ৪ ফাইল) — `toStylingOptions`, `buildPayload` (২০ টাইপ), প্রিসেট ম্যাচিং, `parseCSV`, `makeEPS`। আজকের jsdom স্ক্রিপ্টগুলোই টেস্টে রূপান্তরযোগ্য।
 - **৭.২ e2e (Playwright)** ★★★ · M — "প্রিসেট → ডাউনলোড করা ফাইল ডিকোড হয়", "Bulk ZIP-এ N ফাইল", mobile ভিউপোর্ট।
-- **৭.৩ CI গেট** ★★☆ · S — `.github/workflows/ci.yml`: `tsc --noEmit` + `vitest run` + `build`; PR-এ লাল হলে মার্জ ব্লক।
+- **~~৭.৩ CI গেট~~** ✅ সম্পন্ন (`.github/workflows/ci.yml`: typecheck + test + build) — `.github/workflows/ci.yml`: `tsc --noEmit` + `vitest run` + `build`; PR-এ লাল হলে মার্জ ব্লক।
 - **৭.৪ লিন্ট/ফরম্যাট** ★★☆ · S — ESLint (react-hooks, a11y প্লাগইন) + Prettier + `lint-staged`।
 - **৭.৫ টাইপ সুরক্ষা** ★☆☆ · M — রানটাইম ভ্যালিডেশন (হালকা নিজস্ব; Zod ঐচ্ছিক) — URL/ফোন/WiFi ফিল্ডে ভুল ইনপুটে পেলোড নষ্ট হওয়া ঠেকাবে।
 - **৭.৬ কোড বিভাজন** ★☆☆ · M — `App.tsx` ৫৭৭ লাইন → view-wise কম্পোনেন্ট (`GeneratorView`, `BulkView` …), স্টেট হুক (`useQrConfig`, `useHistory`)।
