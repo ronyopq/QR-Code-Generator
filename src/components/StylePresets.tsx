@@ -1,49 +1,65 @@
+import { useEffect, useRef, useState } from 'react'
+import QRCodeStyling from 'qr-code-styling'
 import { Check, Palette, RotateCcw, Sparkles } from 'lucide-react'
 import { STYLE_PRESETS, activePresetId, CLASSIC_PRESET, type StylePreset } from '../data/stylePresets'
-import type { QRConfig } from '../types'
+import { defaultConfig, type QRConfig } from '../types'
+import { toStylingOptions } from '../lib/qr'
 import { useToast } from './Toast'
 import { Panel } from './ui'
 
-/** A tiny QR-like chip drawn with CSS so presets preview instantly. */
-function PreviewChip({ preset }: { preset: StylePreset }) {
-  const { from, to, bg, shape } = preset.preview
-  const radius = shape === 'dot' ? '9999px' : shape === 'rounded' ? '2px' : '0px'
-  const cells = [
-    [1, 1, 1, 0, 1, 1, 1],
-    [1, 0, 1, 1, 1, 0, 1],
-    [1, 1, 1, 0, 1, 1, 1],
-    [0, 1, 1, 1, 1, 0, 0],
-    [1, 1, 0, 1, 0, 1, 1],
-    [1, 0, 1, 1, 0, 1, 1],
-    [1, 1, 1, 1, 1, 0, 1],
-  ]
+/** Build the styling options a preset produces, without touching the user's content. */
+function presetOptions(preset: StylePreset, size: number) {
+  const cfg = { ...defaultConfig(), ...preset.style } as QRConfig
+  return {
+    ...toStylingOptions(cfg, 'https://qrforge.app'),
+    width: size,
+    height: size,
+    margin: Math.round(size * 0.06),
+  }
+}
+
+/**
+ * A real, tiny QR rendered by the same engine as the live preview.
+ * The chip is therefore pixel-identical to the result — colours, gradients,
+ * module shapes, eyes and background transparency all come from the preset.
+ */
+function PresetChip({ preset, size = 96 }: { preset: StylePreset; size?: number }) {
+  const mount = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = mount.current
+    if (!el) return
+    // StrictMode runs effects twice in dev; render the chip only once.
+    if (el.dataset.rendered === preset.id) return
+    try {
+      el.innerHTML = ''
+      const qr = new QRCodeStyling(presetOptions(preset, size))
+      qr.append(el)
+      el.dataset.rendered = preset.id
+    } catch (e) {
+      console.error('[QRForge] preset chip failed:', e)
+    }
+  }, [preset, size])
+
   return (
-    <div
-      className="grid h-9 w-9 shrink-0 place-content-center gap-[2px] rounded-md p-1 ring-1 ring-black/10"
-      style={{ backgroundColor: bg }}
-      aria-hidden
+    <span
+      className={`flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-md ring-1 ring-black/10 ${
+        preset.style.bgMode === 'transparent' ? 'checker' : ''
+      }`}
+      style={preset.style.bgMode === 'solid' ? { backgroundColor: preset.style.bgColor } : undefined}
+      aria-hidden="true"
     >
-      <div className="grid grid-cols-7 gap-[1.5px]">
-        {cells.flatMap((row, y) =>
-          row.map((on, x) => (
-            <span
-              key={`${x}-${y}`}
-              className="block h-[3.4px] w-[3.4px]"
-              style={{
-                background: on ? (from === to ? from : `linear-gradient(135deg, ${from}, ${to})`) : 'transparent',
-                borderRadius: radius,
-              }}
-            />
-          )),
-        )}
-      </div>
-    </div>
+      <span ref={mount} className="block h-11 w-11 [&>canvas]:h-11 [&>canvas]:w-11" />
+    </span>
   )
 }
 
 export default function StylePresets({ config, onChange }: { config: QRConfig; onChange: (p: Partial<QRConfig>) => void }) {
   const toast = useToast()
   const active = activePresetId(config)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => setMounted(true), [])
 
   const apply = (preset: StylePreset) => {
     onChange(preset.style)
@@ -80,7 +96,7 @@ export default function StylePresets({ config, onChange }: { config: QRConfig; o
       <div className="p-3">
         <p className="mb-2.5 flex items-start gap-1.5 text-[11px] leading-relaxed text-muted">
           <Sparkles size={12} className="mt-0.5 shrink-0 text-accent-strong" />
-          Start with Classic — it scans best. Try a preset when you want a brand look, then fine-tune below.
+          Start with Classic — it scans best. Each swatch is the real render, so what you pick is what you get.
           {active === null && (
             <span className="ml-auto shrink-0 rounded bg-inset px-1.5 py-px text-[9px] font-semibold uppercase tracking-wide text-muted">custom</span>
           )}
@@ -94,13 +110,14 @@ export default function StylePresets({ config, onChange }: { config: QRConfig; o
                 key={preset.id}
                 onClick={() => apply(preset)}
                 aria-pressed={isActive}
+                title={`${preset.name} — ${preset.desc}`}
                 className={`group relative flex items-center gap-2 rounded-lg border p-1.5 text-left transition-colors ${
                   isActive
                     ? 'border-accent/60 bg-accent/10'
                     : 'border-line bg-surface hover:border-line-strong hover:bg-elevated'
                 }`}
               >
-                <PreviewChip preset={preset} />
+                {mounted ? <PresetChip preset={preset} /> : <span className="h-11 w-11 shrink-0 rounded-md bg-inset" aria-hidden="true" />}
                 <span className="min-w-0">
                   <span className="flex items-center gap-1">
                     <span className="truncate text-[11.5px] font-semibold text-fg">{preset.name}</span>
@@ -110,7 +127,11 @@ export default function StylePresets({ config, onChange }: { config: QRConfig; o
                   </span>
                   <span className="mt-0.5 block truncate text-[9.5px] text-subtle">{preset.desc}</span>
                 </span>
-                {isActive && <Check size={12} className="absolute right-1.5 top-1.5 text-accent-strong" />}
+                {isActive && (
+                  <span className="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-on-accent">
+                    <Check size={10} strokeWidth={3} aria-hidden="true" />
+                  </span>
+                )}
               </button>
             )
           })}

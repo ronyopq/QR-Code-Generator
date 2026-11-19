@@ -143,7 +143,14 @@ export function createQR(cfg: QRConfig, payload: string) {
 }
 
 export async function qrBlob(cfg: QRConfig, payload: string, ext: 'png' | 'svg' | 'jpeg' | 'webp'): Promise<Blob> {
-  const qr = createQR(cfg, payload)
+  // JPEG has no alpha channel: a transparent background is encoded as black, which
+  // made every transparent preset (Minimal, Soft, Ocean, Sunset, Forest) download as
+  // a black box in JPG / PDF / EPS / the ZIP bundle. Composite those onto white —
+  // PNG, WEBP and SVG keep their real transparency.
+  const target = ext === 'jpeg' && cfg.bgMode === 'transparent'
+    ? { ...cfg, bgMode: 'solid' as const, bgColor: '#ffffff' }
+    : cfg
+  const qr = createQR(target, payload)
   const blob = await qr.getRawData(ext as never)
   if (!blob) throw new Error('QR render failed')
   return blob as Blob
