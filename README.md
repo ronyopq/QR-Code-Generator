@@ -48,6 +48,16 @@ transparent preset is not rejected because the hidden solid colour drifted, and 
 still needs both colours. Changing anything the preset owns (colour, modules, background) flips the
 panel to **custom**; changing margin, size, logo or error correction keeps it selected.
 
+### Preview and download always agree
+The live preview is a single `QRCodeStyling` instance that is **updated** in place, and `update()` deep-merges the
+new options over the old ones (its `mergeDeep` skips `undefined` values). Any key that a call omits therefore keeps
+its previous value — which is why switching from a gradient preset (Ocean, Sunset, Forest, Gold) to a flat one
+(Classic, Pastel, Midnight) used to keep painting the old gradient in the preview while the downloaded file, built
+from a fresh instance, was correct. `toStylingOptions()` now writes every conditional key on every call
+(`color`/`gradient` on dots, corner squares and corner dots, the background colour and gradient, and `image`), using
+`undefined` when it is unused, so a merged instance is byte-for-byte identical to a freshly created one. All 100
+ordered preset switches are checked against a fresh render.
+
 ### Export transparency
 PNG, WEBP and SVG keep a transparent background. JPEG has no alpha channel, so JPG / PDF / EPS / the
 ZIP bundle composite transparent presets onto **white** instead of encoding them as a black box.
