@@ -22,9 +22,12 @@ describe('SEO copy', () => {
   })
 
   it('claims exactly the number of types the data actually has', () => {
-    expect(QR_TYPES).toHaveLength(20)
-    expect(SUMMARY).toContain('20 QR types')
-    expect(FEATURES[0].title).toBe('20 QR code types')
+    expect(QR_TYPES).toHaveLength(19)
+    expect(SUMMARY).toContain(`${QR_TYPES.length} QR types`)
+    expect(FEATURES[0].title).toBe(`${QR_TYPES.length} QR code types`)
+    expect(SITE.title).toContain(`${QR_TYPES.length} Types`)
+    // and the summary may only name types that exist
+    for (const label of QR_TYPES.map((r) => r.label)) expect(FEATURES[0].body).toContain(label)
   })
 
   it('writes answers worth quoting, not one-liners', () => {
@@ -116,7 +119,7 @@ describe('static shell (what crawlers actually read)', () => {
     for (const f of FAQ) expect(html).toContain(f.q)
   })
 
-  it('lists all 20 types grouped by category, with no empty group', () => {
+  it('lists every type grouped by category, with no empty group', () => {
     const groups = typesByCategory()
     expect(groups.reduce((n, g) => n + g.labels.length, 0)).toBe(QR_TYPES.length)
     for (const g of groups) {

@@ -56,7 +56,7 @@ const HOME_CARD = {
   title: 'QRForge',
   titleSize: 124,
   subtitle: 'Free QR code generator',
-  facts: '20 QR types  ·  8 export formats  ·  logos & presets',
+  facts: '19 QR types  ·  8 export formats  ·  logos & presets',
   urlText: 'qrforge-bd.vercel.app',
 }
 

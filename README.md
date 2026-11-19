@@ -34,10 +34,13 @@ listed with evidence, effort and a sprint plan in **[ROADMAP.md](./ROADMAP.md)**
 
 ## ✨ Features
 
-### 20 QR types
+### 19 QR types
 URL · Text · Email · Phone · SMS · WhatsApp · WiFi · vCard · Location · Event/Calendar ·
 Social Hub · Facebook · Instagram · YouTube · Telegram · LinkedIn · PDF Link · App Download ·
-Restaurant Menu · **Dynamic QR (ready)** — each with a smart, type-specific form and sample data.
+Restaurant Menu — each with a smart, type-specific form and sample data.
+
+There is no "dynamic QR" type: a static code cannot report scans, and a type that says otherwise
+is a promise, not a feature. See [Why there is no dynamic QR](#why-there-is-no-dynamic-qr-and-no-scan-analytics).
 
 ### Developer showcase
 The footer, the desktop icon rail and the mobile drawer carry a **Crafted by Rony Siddiqi**
@@ -101,7 +104,7 @@ QRForge ships a **prerendered shell** instead (see [SEO.md](./SEO.md)):
 
 - `scripts/prerender.mjs` renders `src/marketing/StaticShell.tsx` to HTML at build time and injects
   it into `#root` — so Google, Bing, **GPTBot, ClaudeBot, PerplexityBot** and every social scraper
-  read the headline, all 20 types, the feature list, the four-step how-to and the full FAQ
+  read the headline, all 19 types, the feature list, the four-step how-to and the full FAQ
   without executing a line of JavaScript. React clears the shell and paints the studio on boot.
 - **One JSON-LD `@graph`** (WebSite · Organization · Person · SoftwareApplication · FAQPage ·
   HowTo) generated from `src/marketing/content.ts`, so the machine-readable copy can never drift
@@ -243,7 +246,7 @@ npm run build
 │   ├── App.tsx                    # Sidebar dashboard shell + routing (views)
 │   ├── types.ts                   # QRConfig, HistoryItem, defaults
 │   ├── data/
-│   │   ├── qrTypes.ts             # 20 QR type definitions + fields + samples
+│   │   ├── qrTypes.ts             # 19 QR type definitions + fields + samples
 │   │   └── templates.ts           # 7 template presets
 │   ├── lib/
 │   │   ├── qr.ts                  # Payload builders, styling options, CSV parser
@@ -390,6 +393,18 @@ service does. That is not this product. QRForge stays static so a printed code w
 paper and the destination page do. If you need editable destinations or scan counts, the honest
 route is a short path on a domain you own plus a 301 — see
 [/static-vs-dynamic-qr-code](https://qrforge-bd.vercel.app/static-vs-dynamic-qr-code).
+
+## ♿ Accessibility
+
+Guaranteed by `src/design.test.ts`, which recomputes the numbers from `src/index.css` on every run:
+
+- **Contrast** — every text token clears WCAG AA (4.5:1) on the surfaces it is used on, in both themes.
+- **Focus** — solid accent ring (5.86:1 light, 6.67:1 dark) against the 3:1 that WCAG 1.4.11 asks
+  for; `forced-colors` gets a real outline instead, because high contrast ignores box-shadows.
+- **Targets** — chips and icon buttons keep their size but carry an invisible 44×44 hit area.
+- **Keyboard** — a skip link jumps the type rail; dialogs trap focus, restore it on close and close
+  on Escape.
+- **Motion** — `prefers-reduced-motion` disables animation and transitions.
 
 ## 📄 License
 

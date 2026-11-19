@@ -18,7 +18,7 @@ Canonical host: **https://qrforge-bd.vercel.app**
 
 | Output | What it does | Where |
 |---|---|---|
-| **Prerendered shell** | The headline, all 20 types, 6 features, the 4-step how-to and the 8-question FAQ are rendered to HTML and injected into `#root`. Crawlers that never run JavaScript — Bing's lighter fetcher, GPTBot, ClaudeBot, PerplexityBot, every social scraper — read real content instead of an empty `<div>`. React clears the shell and paints the studio on boot. | `src/marketing/StaticShell.tsx` → `scripts/prerender.mjs` |
+| **Prerendered shell** | The headline, all 19 types, 6 features, the 4-step how-to and the 8-question FAQ are rendered to HTML and injected into `#root`. Crawlers that never run JavaScript — Bing's lighter fetcher, GPTBot, ClaudeBot, PerplexityBot, every social scraper — read real content instead of an empty `<div>`. React clears the shell and paints the studio on boot. | `src/marketing/StaticShell.tsx` → `scripts/prerender.mjs` |
 | **JSON-LD `@graph`** | WebSite · Organization · Person (Rony Siddiqi + every real profile) · SoftwareApplication (free, MIT, versioned, feature list, repo) · FAQPage · HowTo. Absolute URLs only. No invented ratings. | `src/marketing/structuredData.ts` |
 | **`robots.txt`** | Absolute sitemap URL + explicit `Allow` for GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot, Claude-Web, PerplexityBot, Google-Extended, Applebot-Extended, CCBot, Bingbot. | generated into `dist/` |
 | **`sitemap.xml`** | Absolute `<loc>` values and a real `lastmod` (today's date at build time). | generated into `dist/` |

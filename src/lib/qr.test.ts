@@ -73,11 +73,6 @@ describe('buildPayload', () => {
     expect(buildPayload(fields({ ios: 'https://apps.apple.com/x' }, { type: 'app' }))).toBe('https://apps.apple.com/x')
   })
 
-  it('dynamic appends the campaign parameters', () => {
-    const out = buildPayload(fields({ url: 'https://x.test/p', campaign: 'eid' }, { type: 'dynamic' }))
-    expect(out).toContain('utm_campaign=eid')
-    expect(out).toContain('utm_source=qrforge-dynamic')
-  })
 })
 
 describe('parseCSV', () => {

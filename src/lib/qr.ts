@@ -55,17 +55,6 @@ export function buildPayload(cfg: QRConfig): string {
       return u.startsWith('http') ? u : `https://t.me/${u.replace('@', '')}`
     }
     case 'app': return f.fallback || f.ios || f.android || ''
-    case 'dynamic': {
-      // Dynamic-ready: encode destination + campaign params. Swap with a redirect
-      // service URL later without changing the QR format.
-      const u = f.url || ''
-      try {
-        const url = new URL(u)
-        if (f.campaign) url.searchParams.set('utm_campaign', f.campaign)
-        url.searchParams.set('utm_source', 'qrforge-dynamic')
-        return url.toString()
-      } catch { return u }
-    }
     default: return ''
   }
 }

@@ -6,19 +6,24 @@
  * can never disagree with each other. Editing this file changes all three.
  */
 
+import { QR_TYPES } from '../data/qrTypes'
+
+/** How many QR types the app really ships — copy and data can never drift. */
+export const TYPE_COUNT = QR_TYPES.length
+
 export const SITE = {
   /** The canonical host. Every absolute URL on the site derives from this. */
   url: 'https://qrforge-bd.vercel.app',
   name: 'QRForge',
   shortName: 'QRForge',
   /** ≤ 60 characters so Google does not truncate it. */
-  title: 'QRForge — Free QR Code Generator with Logo & 20 Types',
+  title: `QRForge — Free QR Code Generator with Logo & ${TYPE_COUNT} Types`,
   /** ≤ 155 characters for the SERP snippet. */
   description:
-    'Free QR code generator for URL, WiFi, vCard, menu, WhatsApp and 16 more types. Add a logo, pick a preset, export PNG, SVG or PDF. No sign-up, no tracking.',
+    `Free QR code generator for URL, WiFi, vCard, menu, WhatsApp and ${TYPE_COUNT - 5} more types. Add a logo, pick a preset, export PNG, SVG or PDF. No sign-up, no tracking.`,
   /** 1200×630 social card. */
   ogImage: '/og.png',
-  ogImageAlt: 'QRForge — free QR code generator with 20 types and 8 export formats',
+  ogImageAlt: `QRForge — free QR code generator with ${TYPE_COUNT} types and 8 export formats`,
   twitterHandle: '@RonySiddiqi',
   locale: 'en_US',
   themeColor: '#f7f7f4',
@@ -37,8 +42,8 @@ export interface Feature {
 
 export const FEATURES: Feature[] = [
   {
-    title: '20 QR code types',
-    body: 'URL, plain text, email, phone, SMS, WhatsApp, WiFi, vCard contact, location, event, social hub, Facebook, Instagram, X, LinkedIn, Telegram, YouTube, app store, crypto and payment links.',
+    title: `${TYPE_COUNT} QR code types`,
+    body: `${QR_TYPES.map((t) => t.label).join(', ')} — each with the fields it actually needs.`,
   },
   {
     title: 'Logo, presets and gradients',
@@ -82,7 +87,7 @@ export const FAQ: Faq[] = [
   },
   {
     q: 'Which QR code types can I create?',
-    a: 'Twenty: URL, plain text, email, phone call, SMS, WhatsApp, WiFi, vCard contact, location, event calendar, social hub, Facebook, Instagram, X, LinkedIn, Telegram, YouTube, app store link, crypto address and payment link.',
+    a: `${QR_TYPES.map((t) => t.label).join(', ')} — ${TYPE_COUNT} in total, each with the fields that payload actually needs.`,
   },
   {
     q: 'What export formats are available?',
@@ -114,7 +119,7 @@ export const HOW_TO: { name: string; description: string; steps: HowToStep[] } =
   steps: [
     {
       name: 'Pick a QR code type',
-      text: 'Choose one of 20 types — URL, WiFi, vCard, WhatsApp, menu, event and more — from the format rail.',
+      text: `Choose one of ${TYPE_COUNT} types — URL, WiFi, vCard, WhatsApp, menu, event and more — from the format rail.`,
     },
     {
       name: 'Enter your content',
@@ -133,4 +138,7 @@ export const HOW_TO: { name: string; description: string; steps: HowToStep[] } =
 
 /** Short, quotable summary for AI assistants and llms.txt. */
 export const SUMMARY =
-  'QRForge is a free, open-source, browser-only QR code generator. It supports 20 QR types (URL, text, email, phone, SMS, WhatsApp, WiFi, vCard, location, event, social hub, Facebook, Instagram, X, LinkedIn, Telegram, YouTube, app store, crypto, payment), 10 design presets, centre logos and gradients, a scan-safety audit, and 8 export formats including a print-ready A4 sheet. Nothing is uploaded, no account is needed and codes never expire.'
+  `QRForge is a free, open-source, browser-only QR code generator. It supports ${TYPE_COUNT} QR types ` +
+  `(${QR_TYPES.map((t) => t.label).join(', ')}), 10 design presets, centre logos and gradients, ` +
+  'a scan-safety audit, and 8 export formats including a print-ready A4 sheet. Nothing is uploaded, ' +
+  'no account is needed and codes never expire.'
