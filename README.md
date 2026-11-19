@@ -41,6 +41,17 @@ Modals are capped at `calc(100dvh - padding)` with a sticky header/footer and a 
 so the credits list no longer runs off screen — on a 320 px tall viewport it scrolls instead of
 clipping.
 
+Preset swatches are **real renders**: each chip is drawn by the same qr-code-styling engine with the
+preset's own options, so gradients, module shapes, eyes and transparent backgrounds match the result
+exactly. The active preset is matched field-by-field against only the values the preset defines — a
+transparent preset is not rejected because the hidden solid colour drifted, and a dual-colour preset
+still needs both colours. Changing anything the preset owns (colour, modules, background) flips the
+panel to **custom**; changing margin, size, logo or error correction keeps it selected.
+
+### Export transparency
+PNG, WEBP and SVG keep a transparent background. JPEG has no alpha channel, so JPG / PDF / EPS / the
+ZIP bundle composite transparent presets onto **white** instead of encoding them as a black box.
+
 ### Start simple, style later
 The first code is always **plain black on white** — square modules, safe error correction, generous
 quiet zone. Nothing is styled until the user asks for it, so the very first download is guaranteed
