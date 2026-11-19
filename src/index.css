@@ -1,0 +1,228 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===========================================================================
+   QRForge — "MODULE" design system
+   Every colour is a CSS variable, so components use ONE class set and both
+   themes resolve completely. Light is the default (paper + ink + green),
+   `.dark` on <html> switches to the OLED palette.
+=========================================================================== */
+
+:root {
+  /* light — paper */
+  --c-canvas: 247 247 244;
+  --c-surface: 255 255 255;
+  --c-elevated: 252 252 250;
+  --c-inset: 243 243 239;
+  --c-line: 229 229 223;
+  --c-line-strong: 207 208 201;
+  --c-fg: 17 20 24;
+  --c-muted: 88 96 106;
+  --c-subtle: 122 130 140;
+  --c-accent: 79 70 229;
+  --c-accent-strong: 67 56 202;
+  --c-on-accent: 255 255 255;
+  --c-danger: 185 28 55;
+  --c-warn: 146 84 9;
+  --c-live: 5 150 105;
+  --c-btn-bg: 17 20 24;
+  --c-btn-fg: 255 255 255;
+  --c-btn-bg-hover: 38 43 50;
+
+  --shadow-card: 0 1px 2px rgba(17, 20, 24, .05), 0 10px 26px -18px rgba(17, 20, 24, .22);
+  --shadow-lift: 0 2px 4px rgba(17, 20, 24, .05), 0 20px 42px -24px rgba(17, 20, 24, .3);
+  --shadow-pop: 0 32px 64px -28px rgba(17, 20, 24, .35);
+
+  --grid-line: rgba(17, 20, 24, .055);
+  color-scheme: light;
+}
+
+html.dark {
+  --c-canvas: 8 9 12;
+  --c-surface: 15 17 21;
+  --c-elevated: 21 24 30;
+  --c-inset: 27 31 39;
+  --c-line: 39 45 56;
+  --c-line-strong: 58 66 79;
+  --c-fg: 245 247 250;
+  --c-muted: 158 167 178;
+  --c-subtle: 130 139 151;
+  --c-accent: 129 140 248;
+  --c-accent-strong: 165 180 252;
+  --c-on-accent: 6 12 9;
+  --c-danger: 251 113 133;
+  --c-warn: 252 211 77;
+  --c-live: 52 211 153;
+  --c-btn-bg: 245 247 250;
+  --c-btn-fg: 10 12 15;
+  --c-btn-bg-hover: 255 255 255;
+
+  --shadow-card: inset 0 1px 0 rgba(255, 255, 255, .03), 0 20px 40px -30px rgba(0, 0, 0, .9);
+  --shadow-lift: inset 0 1px 0 rgba(255, 255, 255, .04), 0 30px 60px -32px rgba(0, 0, 0, .85);
+  --shadow-pop: 0 40px 80px -32px rgba(0, 0, 0, .85);
+
+  --grid-line: rgba(255, 255, 255, .05);
+  color-scheme: dark;
+}
+
+@layer base {
+  html { -webkit-tap-highlight-color: transparent; }
+
+  body {
+    @apply bg-canvas font-sans text-fg antialiased;
+    font-feature-settings: 'ss01';
+  }
+
+  h1, h2, h3, h4 { @apply font-sans font-semibold tracking-[-0.03em]; }
+
+  ::selection { background: rgb(var(--c-accent) / .22); }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent/60 ring-offset-2 ring-offset-canvas;
+  }
+}
+
+@layer components {
+  /* --- surfaces --------------------------------------------------------- */
+  .surface { @apply rounded-2xl border border-line bg-surface shadow-card; }
+  .glass { @apply surface; }
+  .glass-soft { @apply rounded-xl border border-line bg-elevated; }
+  .panel { @apply rounded-xl border border-line bg-surface; }
+  .well { @apply rounded-lg border border-line bg-inset; }
+  .divider { @apply h-px w-full bg-line; }
+
+  /* --- type ------------------------------------------------------------- */
+  .eyebrow { @apply font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-subtle; }
+  .index { @apply font-mono text-[10px] font-semibold tracking-[0.16em] text-accent-strong; }
+  .label { @apply mb-1.5 block font-sans text-[11px] font-semibold text-muted; }
+
+  /* --- controls --------------------------------------------------------- */
+  .input {
+    @apply w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-fg outline-none transition placeholder:text-subtle focus:border-accent/60 focus:ring-2 focus:ring-accent/15;
+  }
+
+  .btn {
+    @apply inline-flex select-none items-center justify-center gap-2 rounded-xl font-sans text-[12.5px] font-semibold tracking-[-0.01em] transition-all duration-150 active:scale-[.99] disabled:pointer-events-none disabled:opacity-40;
+  }
+  .btn-primary {
+    @apply btn px-4 py-2.5;
+    background-color: rgb(var(--c-btn-bg));
+    color: rgb(var(--c-btn-fg));
+  }
+  .btn-primary:hover { background-color: rgb(var(--c-btn-bg-hover)); }
+
+  .btn-secondary { @apply btn border border-line-strong bg-surface px-4 py-2.5 text-fg hover:bg-inset; }
+  .btn-ghost { @apply btn px-3 py-2 text-muted hover:bg-inset hover:text-fg; }
+  .btn-accent { @apply btn border border-accent/40 text-accent-strong hover:border-accent/60; background-color: rgb(var(--c-accent) / .08); }
+
+  .btn-danger { @apply btn px-3 py-2 text-danger hover:bg-danger/10; }
+
+  .icon-btn {
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-lg border border-transparent text-muted transition-colors duration-150 hover:border-line hover:bg-inset hover:text-fg;
+  }
+
+  /* --- chips / badges --------------------------------------------------- */
+  .chip { @apply inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-line bg-surface px-2.5 py-1.5 font-sans text-[11.5px] font-medium text-muted transition-colors duration-150 hover:border-line-strong hover:text-fg; }
+  .chip-active { @apply border-transparent bg-fg text-canvas; }
+
+  .badge { @apply inline-flex items-center gap-1.5 rounded-md px-2 py-1 font-mono text-[10px] font-medium uppercase tracking-[0.1em]; }
+  .badge-soft { @apply bg-inset text-muted; }
+  .badge-run { @apply text-accent-strong; background-color: rgb(var(--c-accent) / .1); }
+
+  .kbd { @apply inline-flex min-w-[1.5rem] items-center justify-center rounded border border-line bg-inset px-1.5 py-0.5 font-mono text-[10px] font-semibold text-muted; }
+
+  /* --- navigation ------------------------------------------------------- */
+  .nav-item { @apply relative flex w-full items-center gap-2.5 rounded-lg px-3 py-2 font-sans text-[12.5px] font-medium text-muted transition-colors duration-150 hover:bg-inset hover:text-fg; }
+  .nav-item-active { @apply bg-surface text-fg shadow-card; }
+
+  /* --- motifs ----------------------------------------------------------- */
+  .module-grid {
+    background-image:
+      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+  .module-grid-fade {
+    -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 18%, transparent 72%);
+    mask-image: radial-gradient(ellipse at 50% 0%, #000 18%, transparent 72%);
+  }
+
+  .crosshair::before,
+  .crosshair::after {
+    content: '';
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    border-color: rgb(var(--c-accent) / .55);
+    border-style: solid;
+  }
+  .crosshair::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
+  .crosshair::after { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+
+  /* "online" stays green while the brand accent stays indigo */
+  .live-dot { @apply relative inline-flex h-1.5 w-1.5 rounded-full; background-color: rgb(var(--c-live)); }
+  .live-dot::after {
+    content: '';
+    @apply absolute inset-0 rounded-full;
+    background-color: rgb(var(--c-live));
+    animation: pulseRing 2.4s ease-out infinite;
+  }
+
+  .checker {
+    background-color: rgb(var(--c-surface));
+    background-image: conic-gradient(rgb(var(--c-line)) 25%, transparent 0 50%, rgb(var(--c-line)) 0 75%, transparent 0);
+    background-size: 16px 16px;
+  }
+}
+
+/* --- cmdk command palette ------------------------------------------------ */
+[cmdk-overlay] {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgb(8 9 12 / .55);
+  backdrop-filter: blur(6px);
+  animation: fadeIn .18s ease both;
+}
+
+[cmdk-dialog] {
+  position: fixed;
+  inset: 0;
+  z-index: 121;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 10vh 1rem 1rem;
+  pointer-events: none;
+}
+
+[cmdk-item] { cursor: pointer; }
+[cmdk-item][data-selected='true'] { background: rgb(var(--c-inset)); color: rgb(var(--c-fg)); }
+
+/* --- native controls ---------------------------------------------------- */
+input[type='range'] { @apply h-1 w-full cursor-pointer appearance-none rounded-full bg-line; }
+input[type='range']::-webkit-slider-thumb {
+  @apply h-3.5 w-3.5 appearance-none rounded-full border-2;
+  background-color: rgb(var(--c-fg));
+  border-color: rgb(var(--c-surface));
+}
+input[type='color'] { @apply h-9 w-full cursor-pointer rounded-lg border border-line bg-transparent p-1; }
+
+/* --- scrollbars --------------------------------------------------------- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgb(var(--c-line-strong)); border-radius: 9999px; border: 3px solid transparent; background-clip: content-box; }
+
+@keyframes toastBar { from { width: 100%; } to { width: 0%; } }
+
+@media print { .no-print { display: none !important; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
