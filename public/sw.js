@@ -3,13 +3,17 @@
  * immediately, cache-first (with background refresh) for static assets.
  * Bump CACHE_VERSION on breaking changes.
  */
-const CACHE_VERSION = 'qrforge-v3';
+const CACHE_VERSION = 'qrforge-v4';
 const CORE = ['./', './index.html', './favicon.svg', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
+/* Filled in at build time (scripts/prerender.mjs) with this build's hashed
+ * assets, so the *first* offline launch works — not just the second one.
+ * An empty array is still valid (dev server, or a build without injection). */
+const PRECACHE = [];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_VERSION)
-      .then((cache) => Promise.allSettled(CORE.map((url) => cache.add(url))))
+      .then((cache) => Promise.allSettled([...CORE, ...PRECACHE].map((url) => cache.add(url))))
       .then(() => self.skipWaiting())
   );
 });

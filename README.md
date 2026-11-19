@@ -177,7 +177,10 @@ Local scan counter, device breakdown, date filters (7d/30d/all), per-QR scan ran
 
 ### Design, PWA & SEO
 - "MODULE" interface: dark-OLED first with a paper light mode, mono typography, 16px module grid, hairline borders, single green accent, icon rail + ⌘K command palette
-- **PWA:** installable (`manifest.webmanifest`), offline service worker (`public/sw.js`), cached app shell
+- **PWA:** installable (`manifest.webmanifest`), and a service worker that precaches the whole app —
+  shell, hashed JS/CSS and all self-hosted fonts — so the **first** offline launch works, not the
+  second. The install prompt is captured (`beforeinstallprompt`), hides itself once the app runs
+  standalone, and confirms with a toast on `appinstalled`.
 - **SEO:** meta description, Open Graph, Twitter Cards, JSON-LD structured data, `robots.txt`, `sitemap.xml`
 - **Performance:** code-splitting (`vendor` / `qr` / `exporters` chunks), lazy-friendly structure, `prefers-reduced-motion` support, AA-friendly contrast & labels
 

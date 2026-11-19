@@ -72,6 +72,11 @@ function Shell() {
   const [developer, setDeveloper] = useState(false)
   const [history, setHistory] = useState<HistoryItem[]>(() => loadHistory())
   const [installEvt, setInstallEvt] = useState<Event | null>(null)
+  // Already running as an installed app (home screen / app list)? Then there is
+  // nothing to install and the button is noise.
+  const [installed, setInstalled] = useState(
+    () => typeof matchMedia !== 'undefined' && matchMedia('(display-mode: standalone)').matches,
+  )
 
   useEffect(() => {
     const root = document.documentElement
@@ -85,6 +90,21 @@ function Shell() {
     window.addEventListener('beforeinstallprompt', handler)
     return () => window.removeEventListener('beforeinstallprompt', handler)
   }, [])
+
+  useEffect(() => {
+    const onInstalled = () => {
+      setInstalled(true)
+      setInstallEvt(null)
+      toast.push({
+        variant: 'success',
+        title: 'QRForge installed',
+        description: 'It opens offline from now on — your codes stay on this device.',
+        duration: 6000,
+      })
+    }
+    window.addEventListener('appinstalled', onInstalled)
+    return () => window.removeEventListener('appinstalled', onInstalled)
+  }, [toast])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -251,7 +271,11 @@ function Shell() {
                   <span className="text-subtle">commands</span>
                 </button>
                 <OnlineNow />
-                <button onClick={install} className="icon-btn hidden sm:inline-flex" aria-label="Install app"><Download size={15} /></button>
+                {!installed && (
+                  <button onClick={install} className="icon-btn hidden sm:inline-flex" aria-label="Install app" title="Install QRForge — works offline">
+                    <Download size={15} />
+                  </button>
+                )}
                 <a
                   href={REPO.url}
                   target="_blank"

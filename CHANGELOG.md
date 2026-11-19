@@ -4,6 +4,31 @@ All notable changes to QRForge are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.0] — 2026-11-19
+
+### Fixed
+- **Offline worked only from the second visit.** The service worker cached the shell and the icons,
+  but the hashed JS/CSS/font files were only cached *after* a page fetched them — so the first
+  launch after installing, with no network, showed an unstyled blank page. `scripts/prerender.mjs`
+  now reads the built `index.html` and stylesheet and injects this build's hashed assets (entry,
+  chunks, CSS and the 11 self-hosted woff2 files — 260 kB) into `public/sw.js`'s `PRECACHE` list at
+  build time. The build fails if the placeholder disappears or nothing is injected.
+  `CACHE_VERSION` goes to `qrforge-v4`, so existing installs re-cache once.
+- **Range sliders were 4 px tall.** A 4 px track with a 14 px thumb is a desktop-only target — on a
+  phone you cannot reliably grab it. The input is now 44 px tall with the same 4 px track drawn by
+  `::-webkit-slider-runnable-track` / `::-moz-range-track`, so the look is unchanged and the touch
+  target quadruples. Firefox gets its own `::-moz-range-thumb` styling for the first time.
+
+### Added
+- **Install prompt handling that reacts.** `appinstalled` is now listened to: the button disappears,
+  and a toast confirms the app opens offline from now on. When the page is already running as an
+  installed app (`display-mode: standalone`), the install button is not rendered at all instead of
+  offering an install the browser will refuse.
+
+### Changed
+- Two more design guards (`src/design.test.ts`, now 12 tests): sliders must keep the 44 px/4 px
+  split, and `public/sw.js` must keep its `PRECACHE` placeholder and version constant.
+
 ## [1.9.0] — 2026-11-19
 
 ### Removed
