@@ -109,9 +109,10 @@ QRForge ships a **prerendered shell** instead (see [SEO.md](./SEO.md)):
   from the visible copy. Absolute URLs only; no fake ratings, no invented reviews.
 - `robots.txt` and `sitemap.xml` are **generated** with absolute URLs, and the AI answer engines
   are explicitly allowed. `llms.txt` gives assistants one plain-text source of truth.
-- **Five static guides** — `/wifi-qr-code`, `/vcard-qr-code`, `/menu-qr-code`,
-  `/whatsapp-qr-code`, `/url-qr-code` — real URLs, no JavaScript bundle, each with its own title,
-  canonical, OG card (containing a real QR of that page), breadcrumb, how-to and FAQ schema.
+- **Twenty static guides** — one real URL per QR type (`/wifi-qr-code`, `/vcard-qr-code`,
+  `/menu-qr-code`, `/email-qr-code`, `/instagram-qr-code`, …) plus
+  `/static-vs-dynamic-qr-code`. No JavaScript bundle, each with its own title, canonical, OG card
+  (containing a real QR of that page), breadcrumb, how-to and FAQ schema.
   Adding a page is one entry in `src/marketing/routes.ts`: the build writes the HTML, the sitemap
   and `llms.txt` from it.
 - A real **1200×630 social card** (`public/og.png`) with a working QR in it, built by

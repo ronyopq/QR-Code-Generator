@@ -1,7 +1,7 @@
 {
   "name": "qr-code-generator",
   "private": true,
-  "version": "1.6.0",
+  "version": "1.7.0",
   "type": "module",
   "description": "Enterprise Multi-Function QR Code Generator \u2014 deployable on GitHub Pages",
   "scripts": {

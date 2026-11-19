@@ -81,10 +81,15 @@ link it from the author's own blog (`ronysiddiqi.blogspot.com`, `ronysiddiqi.wor
 | `/whatsapp-qr-code` ✅ | whatsapp qr code generator |
 | `/url-qr-code` ✅ | url qr code generator free |
 
-**Batch 2 (next):** the remaining 15 types — email, phone, sms, text, location, event, instagram,
-facebook, youtube, telegram, linkedin, pdf, app-download, social, dynamic.
+**Batch 2 (1.7.0)** — the remaining types: `/email-`, `/phone-`, `/sms-`, `/text-`, `/location-`,
+`/event-`, `/pdf-`, `/app-download-`, `/instagram-`, `/facebook-`, `/youtube-`, `/telegram-`,
+`/linkedin-`, `/social-qr-code`, and `/static-vs-dynamic-qr-code`. 21 URLs in total.
 
-**Batch 3:** guides — `/how-to/size-a-qr-code` (how big should a qr code be),
+> `/dynamic-qr-code` was deliberately **not** built: QRForge makes static codes, and a page
+> targeting "dynamic qr code generator" would promise a feature the product does not have. The
+> static-vs-dynamic comparison covers the same query honestly.
+
+**Batch 3 (next):** how-to guides — `/how-to/size-a-qr-code` (how big should a qr code be),
 `/how-to/qr-code-with-logo`, `/how-to/qr-not-scanning` (qr code not scanning fix).
 
 To add one: append a `LandingRoute` to `src/marketing/routes.ts` (and mirror its path + label in
