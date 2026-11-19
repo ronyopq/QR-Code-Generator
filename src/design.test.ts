@@ -113,6 +113,23 @@ describe('interaction affordances', () => {
     expect(css).toMatch(/height:\s*max\(100%,\s*2\.75rem\)/)
   })
 
+  it('gives range sliders a 44px hit area but a 4px track', () => {
+    const block = /input\[type='range'\]\s*\{([^}]*)\}/.exec(css)?.[1] ?? ''
+    expect(block).toMatch(/height:\s*2\.75rem/)
+    expect(css).toMatch(/::-webkit-slider-runnable-track\s*\{[^}]*height:\s*0\.25rem/)
+    expect(css).toMatch(/::-moz-range-track\s*\{[^}]*height:\s*0\.25rem/)
+    // the old rule painted the 4px track on the 44px element itself
+    expect(block).not.toMatch(/bg-line|h-1\b/)
+  })
+
+  it('precaches this build’s assets for the first offline launch', () => {
+    const sw = readFileSync(path.join(process.cwd(), 'public/sw.js'), 'utf8')
+    // the build injects hashed files into this exact placeholder
+    expect(sw).toContain('const PRECACHE = [];')
+    expect(sw).toContain('[...CORE, ...PRECACHE]')
+    expect(sw).toMatch(/CACHE_VERSION = 'qrforge-v\d+'/)
+  })
+
   it('respects reduced motion and Windows high contrast', () => {
     expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)/)
     expect(css).toMatch(/@media \(forced-colors: active\)/)

@@ -107,6 +107,40 @@ for (const page of pages) {
   await writeFile(path.join(dir, 'index.html'), page.html)
 }
 
+// ------------------------------------------------------- offline precache list
+// The service worker ships from public/ before the build hashes anything, so the
+// hashed JS/CSS can only be written in afterwards. Injecting them makes the very
+// first install usable offline instead of relying on a second visit to warm the
+// cache. The placeholder lives in public/sw.js as `const PRECACHE = [];`.
+const assets = [...indexHtml.matchAll(/(?:src|href)="\.\/(assets\/[^"]+)"/g)].map((m) => `./${m[1]}`)
+// The stylesheet pulls in self-hosted fonts by relative url(); without them an
+// offline first launch falls back to a system font — functional, but not the
+// product. 260 kB of woff2 is a fair price for a real offline app.
+for (const css of assets.filter((a) => a.endsWith('.css'))) {
+  const source = await readFile(path.join(dist, css.replace(/^\.\//, '')), 'utf8')
+  for (const m of source.matchAll(/url\((?:\.\/)?([^)'"]+\.(?:woff2?|ttf))(?:\)|#)/g)) {
+    assets.push(`./assets/${path.basename(m[1])}`)
+  }
+}
+const uniqueAssets = [...new Set(assets)]
+const swPath = path.join(dist, 'sw.js')
+if (!uniqueAssets.length) fail('no hashed assets found in dist/index.html — nothing to precache')
+if (!existsSync(swPath)) fail('dist/sw.js is missing — is public/sw.js still there?')
+
+let sw = await readFile(swPath, 'utf8')
+if (!sw.includes('const PRECACHE = [];')) fail('the PRECACHE placeholder is gone from public/sw.js')
+sw = sw.replace(
+  'const PRECACHE = [];',
+  `const PRECACHE = [\n${uniqueAssets.map((a) => `  '${a}',`).join('\n')}\n];`,
+)
+if (!sw.includes(uniqueAssets[0])) fail('the precache list was not injected into sw.js')
+// Every entry must exist on disk: a typo here means an install event that
+// silently caches nothing, which is exactly the bug this block was written for.
+for (const asset of uniqueAssets) {
+  if (!existsSync(path.join(dist, asset.replace(/^\.\//, '')))) fail(`precache entry ${asset} is not in dist`)
+}
+await writeFile(swPath, sw)
+
 const kb = (s) => `${(Buffer.byteLength(s) / 1024).toFixed(1)} kB`
 console.log(
   [
@@ -114,6 +148,7 @@ console.log(
     `✓ JSON-LD graph       ${kb(jsonld)}`,
     `✓ robots.txt + sitemap.xml + llms.txt written`,
     `✓ ${pages.length} landing pages  ${pages.map((p) => p.path).join(' ')}`,
+    `✓ service worker precaches ${uniqueAssets.length} hashed assets`,
     `✓ title ${decodedTitle.length}/60 chars`,
   ].join('\n'),
 )
