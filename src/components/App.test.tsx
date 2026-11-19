@@ -106,28 +106,12 @@ describe('App', () => {
     await app.unmount()
   }, 20000)
 
-  it('switches the whole interface to Bengali, remembers it, and switches back', async () => {
-    localStorage.removeItem('qrforge-lang')
+  it('ships an English-only interface with no language switcher', async () => {
     const app = await mount()
-    const langButton = () => app.$$('button[aria-label]').find((b) => /switch language|ভাষা বদলান/i.test(b.getAttribute('aria-label') || ''))!
-
     expect(app.text()).toContain('Live preview')
-    await click(langButton())
-
-    expect(app.text()).toContain('লাইভ প্রিভিউ')
-    expect(app.text()).toContain('স্ক্যান যাচাই')
-    expect(app.text()).toContain('ডিজাইন প্রিসেট')
-    expect(app.text()).toContain('ক্লাসিক')
-    expect(app.text()).toContain('ছাপার জন্য প্রস্তুত')
-    expect(document.documentElement.lang).toBe('bn')
-    expect(localStorage.getItem('qrforge-lang')).toBe('bn')
-
-    // the toggle label flips too, and en restores the English chrome
-    await click(langButton())
-    expect(app.text()).toContain('Live preview')
-    expect(document.documentElement.lang).toBe('en')
-    expect(localStorage.getItem('qrforge-lang')).toBe('en')
-
+    expect(app.text()).not.toMatch(/[\u0980-\u09FF]/)
+    expect(app.$$('button').some((b) => /switch language|ভাষা/i.test(b.getAttribute('aria-label') || ''))).toBe(false)
+    expect(localStorage.getItem('qrforge-lang')).toBeNull()
     await app.unmount()
   }, 20000)
 

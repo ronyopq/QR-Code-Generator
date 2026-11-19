@@ -4,10 +4,29 @@ All notable changes to QRForge are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] — 2026-11-19
+
+### Removed
+- **Bengali interface and the language switcher — withdrawn.** The i18n layer from 1.3.0
+  (`src/lib/i18n.tsx`, its dictionary and its tests) is gone, and every component renders plain
+  English strings again. Reason: the translation shipped ahead of a full review and left the
+  type forms and the customiser in English, so the switcher promised more than it delivered.
+- `qrforge-lang` localStorage key is no longer written or read; a leftover value is harmless.
+
+### Changed
+- The version fix from 1.3.0 survives: `__APP_VERSION__` still comes from `package.json`, and the
+  scan-check fixes carry a plain `label` instead of a dictionary key.
+- Tests: the Bengali DOM test and the dictionary suite were replaced by a guard that fails if the
+  interface ever renders Bengali text or exposes a language switch again (59 specs total).
+
+### Fixed
+- `<html lang="en">` is now the single source of truth, so screen readers and search engines no
+  longer follow a stale per-device preference.
+
 ## [1.3.0] — 2026-11-19
 
 ### Added
-- **Bengali interface.** A zero-dependency i18n layer (`src/lib/i18n.tsx`) with a flat
+- ~~**Bengali interface.**~~ *Withdrawn in 1.4.0.* A zero-dependency i18n layer (`src/lib/i18n.tsx`) with a flat
   dictionary, `{placeholder}` interpolation and an English fallback for every missing key.
   The header gains a language switch (icon-only on phones); `<html lang>` and the saved
   preference follow it. Translated: navigation, hero, section headings, preset names and

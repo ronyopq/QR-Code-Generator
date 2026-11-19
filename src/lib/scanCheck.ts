@@ -23,7 +23,7 @@ export interface ScanIssue {
   /** values interpolated into the translated strings */
   params: Record<string, string | number>
   /** one-tap repair; a patch is applied to the config, a bare suggestion is handled by the panel */
-  fix?: { key: string; params?: Record<string, string | number>; patch?: Partial<QRConfig>; suggestMm?: number }
+  fix?: { key: string; label: string; params?: Record<string, string | number>; patch?: Partial<QRConfig>; suggestMm?: number }
 }
 
 export interface ScanReport {
@@ -157,8 +157,8 @@ export function analyseScan(cfg: QRConfig, payload: string, physicalMm = 40): Sc
       detail: `Modules and background differ by only ${contrast}:1. Cameras need at least 3:1, ideally 7:1.`,
       params: { ratio: contrast },
       fix: cfg.bgMode === 'transparent'
-        ? { key: 'fix.whiteBackground', patch: { bgMode: 'solid', bgColor: '#ffffff' } }
-        : { key: 'fix.resetBlack', patch: { colorMode: 'single', fgColor: '#000000', bgColor: '#ffffff', bgMode: 'solid' } },
+        ? { key: 'fix.whiteBackground', label: 'Use a white background', patch: { bgMode: 'solid', bgColor: '#ffffff' } }
+        : { key: 'fix.resetBlack', label: 'Reset to black on white', patch: { colorMode: 'single', fgColor: '#000000', bgColor: '#ffffff', bgMode: 'solid' } },
     })
   } else if (contrast < 4.5) {
     issues.push({
@@ -166,7 +166,7 @@ export function analyseScan(cfg: QRConfig, payload: string, physicalMm = 40): Sc
       title: 'Low contrast',
       detail: `${contrast}:1 — above the floor but dim. Darker modules or a lighter background scan faster.`,
       params: { ratio: contrast },
-      fix: { key: 'fix.darken', patch: { colorMode: 'single', fgColor: '#111418' } },
+      fix: { key: 'fix.darken', label: 'Darken the modules', patch: { colorMode: 'single', fgColor: '#111418' } },
     })
   }
 
@@ -178,6 +178,7 @@ export function analyseScan(cfg: QRConfig, payload: string, physicalMm = 40): Sc
       params: { modules: quietModules },
       fix: {
         key: 'fix.margin',
+        label: `Set margin to ${Math.ceil((STANDARD_QUIET_MODULES * cfg.width) / modules)}px`,
         params: { px: Math.ceil((STANDARD_QUIET_MODULES * cfg.width) / modules) },
         patch: { margin: Math.ceil((STANDARD_QUIET_MODULES * cfg.width) / modules) },
       },
@@ -190,7 +191,7 @@ export function analyseScan(cfg: QRConfig, payload: string, physicalMm = 40): Sc
       title: 'Modules too small to print',
       detail: `At ${sizeMm} mm each module is ${moduleMm} mm. Print at least ${minSizeMm} mm wide, or shorten the content.`,
       params: { mm: sizeMm, moduleMm, min: minSizeMm },
-      fix: { key: 'fix.suggestSize', params: { mm: minSizeMm }, suggestMm: minSizeMm },
+      fix: { key: 'fix.suggestSize', label: `Suggest ${minSizeMm} mm`, params: { mm: minSizeMm }, suggestMm: minSizeMm },
     })
   } else if (moduleMm < MIN_MODULE_MM) {
     issues.push({
@@ -207,7 +208,7 @@ export function analyseScan(cfg: QRConfig, payload: string, physicalMm = 40): Sc
       title: 'Logo vs. error correction',
       detail: `A ${Math.round(cfg.logoSize * 100)}% logo covers part of the code; error correction is ${cfg.errorCorrection}. Use H for 30% recovery.`,
       params: { size: Math.round(cfg.logoSize * 100), ec: cfg.errorCorrection },
-      fix: { key: 'fix.useH', patch: { errorCorrection: 'H' } },
+      fix: { key: 'fix.useH', label: 'Use error correction H', patch: { errorCorrection: 'H' } },
     })
   }
   if (cfg.logo && cfg.logoSize > 0.35) {
@@ -216,7 +217,7 @@ export function analyseScan(cfg: QRConfig, payload: string, physicalMm = 40): Sc
       title: 'Logo is very large',
       detail: `A logo covering ${Math.round(cfg.logoSize * 100)}% of the code risks unreadable modules even at H.`,
       params: { size: Math.round(cfg.logoSize * 100) },
-      fix: { key: 'fix.shrinkLogo', patch: { logoSize: 0.3 } },
+      fix: { key: 'fix.shrinkLogo', label: 'Shrink logo to 30%', patch: { logoSize: 0.3 } },
     })
   }
 
@@ -226,7 +227,7 @@ export function analyseScan(cfg: QRConfig, payload: string, physicalMm = 40): Sc
       title: 'Light modules on a dark background',
       detail: 'Many older scanners only read dark-on-light. Works on modern phones — test before printing.',
       params: {},
-      fix: { key: 'fix.invert', patch: { colorMode: 'single', fgColor: '#111418', bgMode: 'solid', bgColor: '#ffffff' } },
+      fix: { key: 'fix.invert', label: 'Invert to dark on light', patch: { colorMode: 'single', fgColor: '#111418', bgMode: 'solid', bgColor: '#ffffff' } },
     })
   }
 
@@ -236,7 +237,7 @@ export function analyseScan(cfg: QRConfig, payload: string, physicalMm = 40): Sc
       title: 'Rendering is cramped',
       detail: `Only ${modulePx}px per module at ${cfg.width}px. Raise the export size or shorten the content.`,
       params: { px: modulePx, width: cfg.width },
-      fix: { key: 'fix.export1024', patch: { width: 1024, height: 1024 } },
+      fix: { key: 'fix.export1024', label: 'Export at 1024px', patch: { width: 1024, height: 1024 } },
     })
   }
 

@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { AlertTriangle, Check, CircleSlash, Loader2, Ruler, ScanLine, ShieldCheck, Wand2 } from 'lucide-react'
 import type { QRConfig } from '../types'
-import { analyseScan, reportSummaryKey } from '../lib/scanCheck'
+import { analyseScan, reportSummary } from '../lib/scanCheck'
 import { qrBlob } from '../lib/qr'
-import { useI18n, type TranslationKey } from '../lib/i18n'
 import { Panel } from './ui'
 
 const SIZES = [20, 30, 40, 60, 100]
@@ -32,7 +31,6 @@ export default function ScanCheck({
   payload: string
   onChange: (patch: Partial<QRConfig>) => void
 }) {
-  const { t } = useI18n()
   const [mm, setMm] = useState(() => {
     const saved = Number(localStorage.getItem(MM_KEY))
     return Number.isFinite(saved) && saved >= 10 && saved <= 1000 ? saved : 40
@@ -64,7 +62,6 @@ export default function ScanCheck({
     }
   }
 
-  const summary = reportSummaryKey(report)
   const tone =
     report.level === 'pass'
       ? { chip: 'bg-ok/10 text-ok', Icon: ShieldCheck }
@@ -73,20 +70,20 @@ export default function ScanCheck({
         : { chip: 'bg-danger/10 text-danger', Icon: CircleSlash }
 
   const cells = [
-    { label: 'scan.contrast' as const, value: `${report.contrast}:1`, hint: report.contrast >= 4.5 ? t('scan.good') : t('scan.low') },
-    { label: 'scan.modules' as const, value: `${report.modules}²`, hint: `v${report.version} · ${config.errorCorrection}` },
-    { label: 'scan.moduleSize' as const, value: `${report.moduleMm}mm`, hint: report.moduleMm >= 0.4 ? t('scan.printable') : t('scan.small') },
-    { label: 'scan.quiet' as const, value: `${report.quietModules}mod`, hint: report.quietModules >= 4 ? t('scan.ok') : t('scan.tight') },
+    { label: 'contrast', value: `${report.contrast}:1`, hint: report.contrast >= 4.5 ? 'good' : 'low' },
+    { label: 'modules', value: `${report.modules}²`, hint: `v${report.version} · ${config.errorCorrection}` },
+    { label: 'module size', value: `${report.moduleMm}mm`, hint: report.moduleMm >= 0.4 ? 'printable' : 'small' },
+    { label: 'quiet zone', value: `${report.quietModules}mod`, hint: report.quietModules >= 4 ? 'ok' : 'tight' },
   ]
 
   return (
     <Panel
       head={{
-        label: t('scan.title'),
+        label: 'Scan check',
         icon: ScanLine,
         right: (
           <span className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wide ${tone.chip}`}>
-            <tone.Icon size={10} aria-hidden="true" /> {t(summary.key, summary.params)}
+            <tone.Icon size={10} aria-hidden="true" /> {reportSummary(report)}
           </span>
         ),
       }}
@@ -95,7 +92,7 @@ export default function ScanCheck({
         <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
           {cells.map((c) => (
             <div key={c.label} className="rounded-lg border border-line bg-elevated px-2 py-1.5">
-              <p className="font-mono text-[8.5px] uppercase tracking-[0.12em] text-subtle">{t(c.label)}</p>
+              <p className="font-mono text-[8.5px] uppercase tracking-[0.12em] text-subtle">{c.label}</p>
               <p className="font-mono text-[12.5px] font-semibold tabular-nums text-fg">{c.value}</p>
               <p className="truncate font-sans text-[9px] text-muted">{c.hint}</p>
             </div>
@@ -104,7 +101,7 @@ export default function ScanCheck({
 
         <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
           <span className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-[0.12em] text-subtle">
-            <Ruler size={10} aria-hidden="true" /> {t('scan.printWidth')}
+            <Ruler size={10} aria-hidden="true" /> print width
           </span>
           {SIZES.map((s) => (
             <button
@@ -124,10 +121,10 @@ export default function ScanCheck({
             max={1000}
             value={mm}
             onChange={(e) => setMm(Math.max(10, Math.min(1000, Number(e.target.value) || 40)))}
-            aria-label={t('scan.printWidth')}
+            aria-label="Print width in millimetres"
             className="input !w-16 !px-1.5 !py-0.5 !text-[10px]"
           />
-          <span className="ml-auto font-sans text-[9.5px] text-muted">{t('scan.min', { mm: report.minSizeMm })}</span>
+          <span className="ml-auto font-sans text-[9.5px] text-muted">min {report.minSizeMm}mm</span>
         </div>
 
         {report.issues.length > 0 && (
@@ -138,8 +135,8 @@ export default function ScanCheck({
                   <AlertTriangle size={12} aria-hidden="true" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-semibold text-fg">{t(`issue.${issue.code}.title` as TranslationKey, issue.params)}</p>
-                  <p className="mt-0.5 font-sans text-[10px] leading-relaxed text-muted">{t(`issue.${issue.code}.detail` as TranslationKey, issue.params)}</p>
+                  <p className="text-[11px] font-semibold text-fg">{issue.title}</p>
+                  <p className="mt-0.5 font-sans text-[10px] leading-relaxed text-muted">{issue.detail}</p>
                 </div>
                 {issue.fix && (
                   <button
@@ -147,7 +144,7 @@ export default function ScanCheck({
                     className="shrink-0 rounded-md border border-line px-1.5 py-1 font-mono text-[9px] uppercase tracking-wide text-muted transition-colors hover:border-accent/50 hover:text-accent-strong"
                   >
                     <span className="inline-flex items-center gap-1">
-                      <Wand2 size={9} aria-hidden="true" /> {t(issue.fix.key as TranslationKey, issue.fix.params)}
+                      <Wand2 size={9} aria-hidden="true" /> {issue.fix.label}
                     </span>
                   </button>
                 )}
@@ -164,22 +161,22 @@ export default function ScanCheck({
               className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-elevated px-2 py-1.5 font-sans text-[11px] font-medium text-muted transition-colors hover:border-accent/50 hover:text-fg disabled:opacity-40"
             >
               {decoding.kind === 'running' ? <Loader2 size={12} className="animate-spin" /> : <ScanLine size={12} aria-hidden="true" />}
-              {t('scan.test')}
+              Test this code
             </button>
           ) : (
-            <p className="font-sans text-[10px] leading-relaxed text-subtle">{t('scan.unsupported')}</p>
+            <p className="font-sans text-[10px] leading-relaxed text-subtle">Decode test needs Chrome, Edge or Android (BarcodeDetector). The checks above still apply.</p>
           )}
 
           {decoding.kind === 'ok' && (
             <span className="inline-flex items-center gap-1 rounded-md bg-ok/10 px-1.5 py-0.5 font-mono text-[9.5px] font-semibold uppercase tracking-wide text-ok">
-              <Check size={10} aria-hidden="true" /> {t('scan.testOk')}
+              <Check size={10} aria-hidden="true" /> decoded — matches your content
             </span>
           )}
-          {decoding.kind === 'nothing' && <span className="font-mono text-[9.5px] uppercase tracking-wide text-danger">{t('scan.noCode')}</span>}
+          {decoding.kind === 'nothing' && <span className="font-mono text-[9.5px] uppercase tracking-wide text-danger">no code found</span>}
           {decoding.kind === 'mismatch' && (
-            <span className="truncate font-mono text-[9.5px] uppercase tracking-wide text-warn" title={decoding.text}>{t('scan.mismatch')}</span>
+            <span className="truncate font-mono text-[9.5px] uppercase tracking-wide text-warn" title={decoding.text}>decoded different content</span>
           )}
-          {decoding.kind === 'error' && <span className="font-mono text-[9.5px] uppercase tracking-wide text-danger">{t('scan.decodeFailed')}</span>}
+          {decoding.kind === 'error' && <span className="font-mono text-[9.5px] uppercase tracking-wide text-danger">decode failed</span>}
         </div>
       </div>
     </Panel>

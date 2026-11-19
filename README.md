@@ -94,17 +94,15 @@ completed, and a one-click PNG button next to the preview.
 - **Size:** 100–5000 px width/height, scale slider, margin/quiet-zone, error correction L/M/Q/H
 - **Quality:** HD, 2K, 4K, Print (300 DPI), Social Media
 
+### One language, on purpose
+The interface is **English only** — no language switcher, no half-translated strings. A Bengali
+UI was tried in 1.3.0 and withdrawn in 1.4.0; it will only come back as a complete, reviewed
+translation rather than a partially translated shell.
+
 ### Live preview & export
 - Real-time generation, zoom (40–250%), fullscreen preview, encoded-payload inspector
 - **PNG, JPG, SVG, WEBP, PDF (A4), EPS, A4 print sheet, ZIP package** (PNG+SVG+JPG+payload+config.json)
 - Powered by `qr-code-styling`, `jsPDF`, `JSZip`, `FileSaver.js` — loaded only when you export
-
-### Two languages (English / বাংলা)
-A tiny i18n layer (`src/lib/i18n.tsx`, no dependency) keeps a flat dictionary with `{placeholder}`
-support and an English fallback, so a missing translation can never blank the interface. The
-language switch sits in the top bar (icon only on phones), follows the browser language on first
-visit, is remembered per device, updates `<html lang>` for screen readers and SEO, and the tests
-enforce that every Bengali key exists and no string is silently left untranslated.
 
 ### Scan check — "will this actually scan?"
 The panel under the preview audits the current design before you print:
