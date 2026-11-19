@@ -8,6 +8,17 @@ no backend, no sign-up, no watermarks. Deploys free on **GitHub Pages**.
 
 ---
 
+## Live site
+
+- **Vercel (live now):** https://qrforge-gamma-five.vercel.app
+- **GitHub Pages:** https://ronyopq.github.io/QR-Code-Generator/ — the workflow
+  (`.github/workflows/deploy.yml`) is ready; a repository admin only needs to set
+  **Settings → Pages → Source: GitHub Actions** once. Until then the workflow builds,
+  keeps the artifact and skips publishing with a notice (it does not fail).
+
+Both sites build from the same commit with `npm run build` (Vite, `dist/`).
+
+
 ## ✨ Features
 
 ### 20 QR types
