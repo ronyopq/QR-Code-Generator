@@ -29,6 +29,7 @@ import CreditsModal from './components/CreditsModal'
 import DeveloperBadge from './components/DeveloperBadge'
 import DeveloperModal from './components/DeveloperModal'
 import ModuleGlyph from './components/ModuleGlyph'
+import { REPO } from './data/repo'
 import { ToastProvider, useToast } from './components/Toast'
 import { SectionHead, Stat } from './components/ui'
 
@@ -200,6 +201,16 @@ function Shell() {
           <div className="mt-auto flex flex-col items-center gap-1">
             <div className="mb-1 h-px w-8 bg-line" />
             <DeveloperBadge variant="rail" onClick={() => setDeveloper(true)} />
+            <a
+              href={REPO.url}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Source code on GitHub"
+              title={`Source code — ${REPO.label}`}
+              className="flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-inset hover:text-fg"
+            >
+              <Github size={14} />
+            </a>
             <button onClick={() => setCredits(true)} aria-label="Credits and licences" className="flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-inset hover:text-fg ">
               <Sparkles size={14} />
             </button>
@@ -230,6 +241,16 @@ function Shell() {
                 </button>
                 <OnlineNow />
                 <button onClick={install} className="icon-btn hidden sm:inline-flex" aria-label="Install app"><Download size={15} /></button>
+                <a
+                  href={REPO.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="icon-btn relative after:absolute after:-inset-1 after:content-['']"
+                  aria-label="Source code on GitHub"
+                  title={`Source code — ${REPO.label}`}
+                >
+                  <Github size={15} />
+                </a>
                 <button onClick={() => setDark(!dark)} className="icon-btn lg:hidden" aria-label="Toggle colour scheme">{dark ? <Sun size={15} /> : <Moon size={15} />}</button>
                 <button onClick={() => setCredits(true)} className="icon-btn" aria-label="Credits and licences"><Sparkles size={15} /></button>
               </div>
@@ -495,7 +516,13 @@ function Shell() {
                       <span className="h-2.5 w-px bg-line" />
                       <DeveloperBadge variant="meta" onClick={() => setDeveloper(true)} />
                       <span className="h-2.5 w-px bg-line" />
-                      <a href="https://github.com" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-fg ">
+                      <a
+                        href={REPO.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        title={`Source code — ${REPO.label}`}
+                        className="inline-flex items-center gap-1 hover:text-fg"
+                      >
                         <Github size={10} /> source
                       </a>
                     </div>

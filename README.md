@@ -10,6 +10,9 @@ no backend, no sign-up, no watermarks. Deploys free on **GitHub Pages**.
 
 ## Live site
 
+- **Source code:** https://github.com/ronyopq/QR-Code-Generator — the app's GitHub icon (top bar),
+  the left rail, the footer **source** link, the credits sheet and `⌘K → Source on GitHub`
+  all point here (`src/data/repo.ts` is the single place to change it).
 - **Vercel (live now):** https://qrforge-gamma-five.vercel.app
 - **GitHub Pages:** https://ronyopq.github.io/QR-Code-Generator/ — the workflow
   (`.github/workflows/deploy.yml`) is ready; a repository admin only needs to set
