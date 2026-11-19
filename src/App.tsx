@@ -4,7 +4,7 @@ import {
   BarChart3, Bookmark, Calendar, Check, Contact, Copy, Download, Facebook,
   FileSpreadsheet, FileText, Github, History, Instagram, LayoutTemplate, Link2, Linkedin,
   Command, Mail, MapPin, Menu, MessageCircle, MessageSquare, Moon, Phone, QrCode, Save, Send,
-  Languages, Share2, ShieldCheck, Smartphone, Sparkles, Sun, Type, UtensilsCrossed, Wifi, X, Youtube,
+  Share2, ShieldCheck, Smartphone, Sparkles, Sun, Type, UtensilsCrossed, Wifi, X, Youtube,
   Zap, type LucideIcon,
 } from 'lucide-react'
 import { QR_TYPES } from './data/qrTypes'
@@ -31,7 +31,6 @@ import DeveloperBadge from './components/DeveloperBadge'
 import DeveloperModal from './components/DeveloperModal'
 import ModuleGlyph from './components/ModuleGlyph'
 import { REPO } from './data/repo'
-import { I18nProvider, useI18n, type TranslationKey } from './lib/i18n'
 import { ToastProvider, useToast } from './components/Toast'
 import { SectionHead, Stat } from './components/ui'
 
@@ -42,17 +41,24 @@ const ICONS: Record<string, LucideIcon> = {
 
 type View = 'generator' | 'templates' | 'bulk' | 'history' | 'analytics'
 
-const NAV: { id: View; key: TranslationKey; icon: LucideIcon }[] = [
-  { id: 'generator', key: 'nav.create', icon: QrCode },
-  { id: 'templates', key: 'nav.templates', icon: LayoutTemplate },
-  { id: 'bulk', key: 'nav.bulk', icon: FileSpreadsheet },
-  { id: 'history', key: 'nav.saved', icon: History },
-  { id: 'analytics', key: 'nav.stats', icon: BarChart3 },
+const NAV: { id: View; label: string; icon: LucideIcon }[] = [
+  { id: 'generator', label: 'Create', icon: QrCode },
+  { id: 'templates', label: 'Templates', icon: LayoutTemplate },
+  { id: 'bulk', label: 'Bulk', icon: FileSpreadsheet },
+  { id: 'history', label: 'Saved', icon: History },
+  { id: 'analytics', label: 'Stats', icon: BarChart3 },
 ]
+
+const TITLE: Record<View, string> = {
+  generator: 'create',
+  templates: 'templates',
+  bulk: 'bulk',
+  history: 'saved',
+  analytics: 'stats',
+}
 
 function Shell() {
   const toast = useToast()
-  const { t, lang, toggle: toggleLang } = useI18n()
   const reduce = useReducedMotion()
   const [view, setView] = useState<View>('generator')
   const [config, setConfig] = useState<QRConfig>(defaultConfig)
@@ -169,7 +175,7 @@ function Shell() {
       key={n.id}
       onClick={() => setView(n.id)}
       aria-current={view === n.id ? 'page' : undefined}
-      aria-label={t(n.key)}
+      aria-label={n.label}
       className={`group relative flex w-full flex-col items-center gap-1 rounded-lg py-2.5 transition-colors ${
         view === n.id
           ? 'bg-inset text-accent-strong  '
@@ -178,7 +184,7 @@ function Shell() {
     >
       {view === n.id && <span className="absolute inset-y-2 left-0 w-0.5 rounded-r bg-accent" />}
       <n.icon size={16} strokeWidth={1.75} />
-      <span className="font-sans text-[9px] font-medium tracking-[0.01em]">{t(n.key)}</span>
+      <span className="font-sans text-[9px] font-medium tracking-[0.01em]">{n.label}</span>
     </button>
   )
 
@@ -223,7 +229,7 @@ function Shell() {
               <div className="hidden items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-subtle sm:flex">
                 <span className="text-muted">qrforge</span>
                 <span className="text-subtle">/</span>
-                <span className="text-fg">{t(NAV.find((n) => n.id === view)!.key)}</span>
+                <span className="text-fg">{TITLE[view]}</span>
               </div>
 
               <div className="ml-auto flex items-center gap-1.5">
@@ -247,17 +253,6 @@ function Shell() {
                   <Github size={15} />
                 </a>
                 <button onClick={() => setDark(!dark)} className="icon-btn lg:hidden" aria-label="Toggle colour scheme">{dark ? <Sun size={15} /> : <Moon size={15} />}</button>
-                <button
-                  onClick={toggleLang}
-                  className="icon-btn relative w-auto gap-1 px-2 after:absolute after:inset-0 after:content-['']"
-                  aria-label={t('lang.toggle')}
-                  title={t('lang.toggle')}
-                >
-                  <Languages size={14} />
-                  <span className="hidden font-mono text-[9.5px] font-semibold uppercase tracking-wide sm:inline">
-                    {lang === 'en' ? 'বাংলা' : 'EN'}
-                  </span>
-                </button>
                 <button onClick={() => setCredits(true)} className="icon-btn" aria-label="Credits and licences"><Sparkles size={15} /></button>
               </div>
             </div>
@@ -278,7 +273,7 @@ function Shell() {
                     onClick={() => { setView(n.id); setDrawer(false) }}
                     className={`nav-item mb-0.5 ${view === n.id ? 'nav-item-active' : ''}`}
                   >
-                    <n.icon size={15} /> {t(n.key)}
+                    <n.icon size={15} /> {n.label}
                   </button>
                 ))}
                 <div className="mt-auto border-t border-line pt-3">
@@ -300,24 +295,25 @@ function Shell() {
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="badge badge-run"><span className="live-dot scale-75" /> live studio</span>
-                          <span className="font-mono text-[9.5px] uppercase tracking-[0.16em] text-subtle">20 types · 7 formats · 0 servers</span>
+                          <span className="font-mono text-[9.5px] uppercase tracking-[0.16em] text-subtle">20 types · 8 formats · 0 servers</span>
                         </div>
 
                         <h1 className="mt-4 max-w-[21ch] font-sans text-[28px] font-semibold leading-[1.1] tracking-[-0.035em] text-fg sm:text-[40px]">
-                          {t('hero.titleA')}<br />
-                          <span className="text-accent-strong">{t('hero.titleB')}</span>
+                          QR codes that<br />
+                          <span className="text-accent-strong">look designed.</span>
                         </h1>
 
                         <p className="mt-3 max-w-md font-sans text-[12.5px] leading-relaxed text-muted sm:text-[13.5px]">
-                          {t('hero.sub')}
+                          Start with a clean black-and-white code, then make it yours with presets, logos
+                          and gradients — or leave it plain. Everything runs in your browser.
                         </p>
 
                         <div className="mt-5 flex flex-wrap items-center gap-2">
                           <button onClick={() => setView('templates')} className="btn-primary">
-                            <LayoutTemplate size={13} /> {t('hero.ctaTemplates')}
+                            <LayoutTemplate size={13} /> Start from a template
                           </button>
                           <button onClick={() => setPalette(true)} className="btn-secondary">
-                            <Sparkles size={13} /> {t('hero.ctaExperiment')}
+                            <Sparkles size={13} /> Experiment
                           </button>
                           <span className="hidden items-center gap-1.5 font-mono text-[9.5px] uppercase tracking-[0.1em] text-subtle sm:flex">
                             press <span className="kbd">⌘</span><span className="kbd">K</span>
@@ -325,10 +321,10 @@ function Shell() {
                         </div>
 
                         <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-line pt-4">
-                          <Stat value={String(QR_TYPES.length)} label={t('hero.stat.types')} />
-                          <Stat value="5000px" label={t('hero.stat.maxOutput')} />
-                          <Stat value="8" label={t('hero.stat.formats')} />
-                          <Stat value="0" label={t('hero.stat.uploads')} />
+                          <Stat value={String(QR_TYPES.length)} label="types" />
+                          <Stat value="5000px" label="max output" />
+                          <Stat value="8" label="export formats" />
+                          <Stat value="0" label="bytes uploaded" />
                         </div>
                       </div>
 
@@ -355,7 +351,7 @@ function Shell() {
 
                   {/* TYPE GRID */}
                   <section>
-                    <SectionHead index="01" title={t('section.format')} hint={t('section.format.hint')} right={<span className="font-mono text-[9.5px] uppercase tracking-[0.1em] text-subtle">{QR_TYPES.length} types</span>} />
+                    <SectionHead index="01" title="Pick a format" hint="what should the code do?" right={<span className="font-mono text-[9.5px] uppercase tracking-[0.1em] text-subtle">{QR_TYPES.length} types</span>} />
                     <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                       {QR_TYPES.map((t) => {
                         const Icon = ICONS[t.icon] || QrCode
@@ -388,18 +384,18 @@ function Shell() {
                   {/* WORKSPACE */}
                   <div className="grid items-start gap-3 lg:grid-cols-2 xl:grid-cols-3">
                     <div>
-                      <SectionHead index="02" title={t('section.content')} done={payload.trim().length > 0} />
+                      <SectionHead index="02" title="Content" done={payload.trim().length > 0} />
                       <TypeForm config={config} onChange={patch} />
                       <div className="mt-2 flex gap-1.5">
-                        <button className="btn-primary flex-1" onClick={saveToHistory}><Save size={13} /> {t('action.save')}</button>
-                        <button className="btn-secondary flex-1" onClick={copyPayload}><Copy size={13} /> {t('action.copy')}</button>
+                        <button className="btn-primary flex-1" onClick={saveToHistory}><Save size={13} /> Save</button>
+                        <button className="btn-secondary flex-1" onClick={copyPayload}><Copy size={13} /> Copy</button>
                       </div>
                     </div>
 
                     <div>
                       <SectionHead
                         index="03"
-                        title={t('section.preview')}
+                        title="Preview &amp; export"
                         done={payload.trim().length > 0}
                         right={
                           <button
@@ -420,7 +416,7 @@ function Shell() {
                     </div>
 
                     <div className="lg:col-span-2 xl:col-span-1">
-                      <SectionHead index="04" title={t('section.style')} hint={t('section.style.hint')} />
+                      <SectionHead index="04" title="Style" hint="optional" />
                       <div className="flex flex-col gap-2">
                         <StylePresets config={config} onChange={patch} />
                         <Customizer config={config} onChange={patch} />
@@ -491,14 +487,14 @@ function Shell() {
                     <div>
                       <p className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.12em] text-fg">QRForge</p>
                       <p className="font-sans text-[10.5px] text-subtle">
-                        {t('footer.free')}
+                        Free forever · MIT · no backend
                         <span className="ml-1.5 font-mono text-[9px] uppercase tracking-[0.1em] text-subtle/80">build {__BUILD_STAMP__}</span>
                       </p>
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-2 sm:items-end">
-                    <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-subtle">{t('footer.builtWith')}</p>
+                    <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-subtle">built with free software</p>
                     <div className="flex flex-wrap gap-1 sm:justify-end">
                       {['React', 'Vite', 'TypeScript', 'Tailwind', 'Lucide', 'qr-code-styling', 'Framer Motion', 'cmdk', 'colord', 'jsPDF', 'JSZip'].map((n) => (
                         <button
@@ -513,11 +509,11 @@ function Shell() {
                     <DeveloperBadge onClick={() => setDeveloper(true)} className="sm:self-end" />
                     <div className="flex items-center gap-3 font-mono text-[9.5px] uppercase tracking-[0.1em] text-subtle">
                       <button onClick={() => window.dispatchEvent(new CustomEvent('qrforge:bookmark'))} className="inline-flex items-center gap-1 hover:text-fg ">
-                        <Bookmark size={10} /> {t('footer.bookmark')}
+                        <Bookmark size={10} /> bookmark
                       </button>
                       <span className="h-2.5 w-px bg-line" />
                       <button onClick={() => setCredits(true)} className="inline-flex items-center gap-1 hover:text-fg ">
-                        <Sparkles size={10} /> {t('footer.credits')}
+                        <Sparkles size={10} /> credits
                       </button>
                       <span className="h-2.5 w-px bg-line" />
                       <DeveloperBadge variant="meta" onClick={() => setDeveloper(true)} />
@@ -529,7 +525,7 @@ function Shell() {
                         title={`Source code — ${REPO.label}`}
                         className="inline-flex items-center gap-1 hover:text-fg"
                       >
-                        <Github size={10} /> {t('footer.source')}
+                        <Github size={10} /> source
                       </a>
                     </div>
                   </div>
@@ -538,7 +534,7 @@ function Shell() {
             </motion.div>
 
             <p className="mt-6 flex items-center justify-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-subtle">
-              <span className="live-dot scale-[0.6]" /> {t('footer.stats', { saved: history.length, types: QR_TYPES.length, formats: 8, version: __APP_VERSION__ })}
+              <span className="live-dot scale-[0.6]" /> {history.length} saved locally · {QR_TYPES.length} types · 8 formats · v{__APP_VERSION__}
             </p>
           </main>
         </div>
@@ -576,10 +572,8 @@ function Shell() {
 
 export default function App() {
   return (
-    <I18nProvider>
-      <ToastProvider>
-        <Shell />
-      </ToastProvider>
-    </I18nProvider>
+    <ToastProvider>
+      <Shell />
+    </ToastProvider>
   )
 }
