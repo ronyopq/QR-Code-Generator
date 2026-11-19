@@ -4,6 +4,41 @@ All notable changes to QRForge are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] — 2026-11-19
+
+### Removed
+- **The "Dynamic QR (Ready)" type.** It was one of the twenty tiles on the format rail, and it
+  promised a backend that has now been ruled out: all it did was append `utm_source=qrforge-dynamic`
+  to a URL. A type called "Ready" that is never going to be ready is the exact kind of claim this
+  project keeps removing. 19 types remain, and a test now fails if any label says *dynamic*,
+  *ready*, *soon*, *beta* or *coming*.
+
+### Fixed
+- **Contrast in the light theme.** `--c-subtle` measured 3.62:1 on the canvas and 3.89:1 on a card —
+  below WCAG AA, and it was the colour of every 9.5px mono label in the UI. It is now 5.01:1 /
+  5.38:1 / 4.84:1 on canvas / surface / inset.
+- **The focus ring was too faint.** `ring-accent/60` resolves to 2.71:1 against the light canvas;
+  WCAG 1.4.11 asks for 3:1. It is solid accent now — 5.86:1 light, 6.67:1 dark. Text inputs were
+  worse: `.input` overrode the ring with `accent/15` (~1.2:1), so keyboard users saw almost nothing.
+  They now use the same solid ring as everything else, plus a solid accent border.
+- **Small controls had small targets.** Chips and icon buttons keep their exact look, but carry an
+  invisible, centred 44×44 hit area (`.tap-44`), and sidebar rows are at least 44px tall.
+
+### Added
+- A **skip link** that jumps the 19-type rail and the top bar, with the main region made focusable.
+- A `forced-colors` fallback: Windows high contrast ignores box-shadow rings, so focus draws a real
+  outline there.
+- `src/design.test.ts` — 10 guards that recompute the WCAG ratios from `index.css`, check the focus
+  and target rules exist, forbid raw hex colours in class names, and keep every product claim
+  honest (type count, no "ready"/"dynamic" labels, no invented types).
+
+### Changed
+- Type counts are **derived from the data**: the page title, meta description, summary, feature
+  list and how-to step all read `QR_TYPES.length` (via `TYPE_COUNT`), so copy can no longer drift
+  from the app.
+- The summary and the feature list used to name types that do not exist (*X, crypto, payment*) and
+  the manifest called the app "Enterprise". Both are now built from `QR_TYPES` / corrected.
+
 ## [1.8.1] — 2026-11-19
 
 ### Changed

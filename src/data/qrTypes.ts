@@ -58,7 +58,4 @@ export const QR_TYPES: QRTypeDef[] = [
   { id:'menu', label:'Restaurant Menu', icon:'UtensilsCrossed', desc:'Digital menu link', category:'Business',
     fields:[{key:'url',label:'Menu URL',type:'url',placeholder:'https://restaurant.com/menu',required:true},{key:'name',label:'Restaurant name',placeholder:'Spice House'}],
     sample:{url:'https://example.com/menu',name:'Spice House'} },
-  { id:'dynamic', label:'Dynamic QR (Ready)', icon:'Zap', desc:'Trackable — architecture ready', category:'Advanced',
-    fields:[{key:'url',label:'Destination URL',type:'url',placeholder:'https://example.com',required:true},{key:'campaign',label:'Campaign ID',placeholder:'summer-2026'},{key:'note',label:'Internal note',placeholder:'Flyer A'}],
-    sample:{url:'https://example.com',campaign:'summer-2026',note:'Flyer A'} },
 ]

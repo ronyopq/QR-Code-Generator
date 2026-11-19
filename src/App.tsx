@@ -193,6 +193,13 @@ function Shell() {
 
   return (
     <div className="min-h-screen bg-canvas text-fg">
+      {/* Keyboard users should be able to jump the 19-type rail and the top bar. */}
+      <a
+        href="#top"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:border focus:border-line focus:bg-surface focus:px-3 focus:py-2 focus:font-sans focus:text-[12.5px] focus:font-semibold focus:text-fg focus:shadow-lift"
+      >
+        Skip to content
+      </a>
       <div className="mx-auto flex w-full max-w-[1600px]">
         {/* icon rail */}
         <aside className="sticky top-0 hidden h-screen w-[68px] shrink-0 flex-col border-r border-line bg-surface/60 px-2 py-3 backdrop-blur lg:flex">
@@ -211,14 +218,14 @@ function Shell() {
               rel="noreferrer"
               aria-label="Source code on GitHub"
               title={`Source code — ${REPO.label}`}
-              className="flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-inset hover:text-fg"
+              className="tap-44 flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-inset hover:text-fg"
             >
               <Github size={14} />
             </a>
-            <button onClick={() => setCredits(true)} aria-label="Credits and licences" className="flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-inset hover:text-fg ">
+            <button onClick={() => setCredits(true)} aria-label="Credits and licences" className="tap-44 flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-inset hover:text-fg">
               <Sparkles size={14} />
             </button>
-            <button onClick={() => setDark(!dark)} aria-label="Toggle colour scheme" className="flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-inset hover:text-fg ">
+            <button onClick={() => setDark(!dark)} aria-label="Toggle colour scheme" className="tap-44 flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-inset hover:text-fg">
               {dark ? <Sun size={14} /> : <Moon size={14} />}
             </button>
           </div>
@@ -286,7 +293,7 @@ function Shell() {
             </div>
           )}
 
-          <main id="top" className="px-3 pb-10 pt-4 sm:px-5 sm:pt-5">
+          <main id="top" tabIndex={-1} className="px-3 pb-10 pt-4 outline-none sm:px-5 sm:pt-5">
             <motion.div key={view} {...fade}>
               {view === 'generator' && (
                 <div className="flex flex-col gap-6">
@@ -298,7 +305,9 @@ function Shell() {
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="badge badge-run"><span className="live-dot scale-75" /> live studio</span>
-                          <span className="font-mono text-[9.5px] uppercase tracking-[0.16em] text-subtle">20 types · 8 formats · 0 servers</span>
+                          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-subtle">
+                            {QR_TYPES.length} types · 8 formats · 0 servers
+                          </span>
                         </div>
 
                         <h1 className="mt-4 max-w-[21ch] font-sans text-[28px] font-semibold leading-[1.1] tracking-[-0.035em] text-fg sm:text-[40px]">

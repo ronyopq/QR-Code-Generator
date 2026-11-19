@@ -104,7 +104,7 @@ function buildLlms(): string {
 - Installable as an offline PWA
 
 ## Pages
-- [QR code generator studio](${absolute('/')}): all 20 types, logos, presets, scan check and 8 export formats
+- [QR code generator studio](${absolute('/')}): all ${QR_TYPES.length} types, logos, presets, scan check and 8 export formats
 ${pages}
 
 ## QR types (${QR_TYPES.length})

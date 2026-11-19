@@ -19,7 +19,7 @@
   --c-line-strong: 207 208 201;
   --c-fg: 17 20 24;
   --c-muted: 88 96 106;
-  --c-subtle: 122 130 140;
+  --c-subtle: 100 107 117;
   --c-accent: 79 70 229;
   --c-accent-strong: 67 56 202;
   --c-on-accent: 255 255 255;
@@ -80,8 +80,15 @@ html.dark {
 
   ::selection { background: rgb(var(--c-accent) / .22); }
 
+  /* WCAG 1.4.11 wants 3:1 for focus indicators. accent/60 measured 2.71:1 on
+     the light canvas — solid accent is 5.86:1 light / 6.67:1 dark. */
   :focus-visible {
-    @apply outline-none ring-2 ring-accent/60 ring-offset-2 ring-offset-canvas;
+    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-canvas;
+  }
+
+  /* Windows high-contrast ignores box-shadow rings, so keep a real outline there. */
+  @media (forced-colors: active) {
+    :focus-visible { outline: 2px solid CanvasText; outline-offset: 2px; }
   }
 }
 
@@ -99,9 +106,29 @@ html.dark {
   .index { @apply font-mono text-[10px] font-semibold tracking-[0.16em] text-accent-strong; }
   .label { @apply mb-1.5 block font-sans text-[11px] font-semibold text-muted; }
 
+  /* --- hit areas -------------------------------------------------------- */
+  /* UI/UX Pro Max: 44x44 minimum touch target. Small controls keep their
+     visual size and grow their *hit* size with an invisible, centred box —
+     no layout shift, no bigger-looking UI on desktop. */
+  .tap-44,
+  .icon-btn,
+  .chip { position: relative; }
+
+  .tap-44::after,
+  .icon-btn::after,
+  .chip::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    width: max(100%, 2.75rem);
+    height: max(100%, 2.75rem);
+  }
+
   /* --- controls --------------------------------------------------------- */
   .input {
-    @apply w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-fg outline-none transition placeholder:text-subtle focus:border-accent/60 focus:ring-2 focus:ring-accent/15;
+    @apply w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-fg outline-none transition placeholder:text-subtle focus:border-accent;
   }
 
   .btn {
@@ -135,7 +162,7 @@ html.dark {
   .kbd { @apply inline-flex min-w-[1.5rem] items-center justify-center rounded border border-line bg-inset px-1.5 py-0.5 font-mono text-[10px] font-semibold text-muted; }
 
   /* --- navigation ------------------------------------------------------- */
-  .nav-item { @apply relative flex w-full items-center gap-2.5 rounded-lg px-3 py-2 font-sans text-[12.5px] font-medium text-muted transition-colors duration-150 hover:bg-inset hover:text-fg; }
+  .nav-item { @apply relative flex min-h-[2.75rem] w-full items-center gap-2.5 rounded-lg px-3 py-2 font-sans text-[12.5px] font-medium text-muted transition-colors duration-150 hover:bg-inset hover:text-fg; }
   .nav-item-active { @apply bg-surface text-fg shadow-card; }
 
   /* --- motifs ----------------------------------------------------------- */
