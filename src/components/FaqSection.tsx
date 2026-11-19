@@ -62,7 +62,20 @@ export default function FaqSection() {
       <div className="rounded-xl border border-line bg-surface p-4 lg:col-span-2">
         <h2 className="font-mono text-[9.5px] uppercase tracking-[0.16em] text-subtle">Guides by type</h2>
         <ul className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1.5">
-          {GUIDES.map((r) => (
+          {GUIDES.filter((r) => !r.path.startsWith('/how-to/')).map((r) => (
+            <li key={r.path}>
+              <a
+                href={`./${r.path.replace(/^\//, '')}`}
+                className="font-sans text-[12px] font-medium text-accent-strong underline decoration-line-strong underline-offset-2 hover:decoration-current"
+              >
+                {r.navLabel}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <h2 className="mt-4 font-mono text-[9.5px] uppercase tracking-[0.16em] text-subtle">How-to</h2>
+        <ul className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1.5">
+          {GUIDES.filter((r) => r.path.startsWith('/how-to/')).map((r) => (
             <li key={r.path}>
               <a
                 href={`./${r.path.replace(/^\//, '')}`}

@@ -113,6 +113,9 @@ QRForge ships a **prerendered shell** instead (see [SEO.md](./SEO.md)):
   `/menu-qr-code`, `/email-qr-code`, `/instagram-qr-code`, …) plus
   `/static-vs-dynamic-qr-code`. No JavaScript bundle, each with its own title, canonical, OG card
   (containing a real QR of that page), breadcrumb, how-to and FAQ schema.
+- **Four how-to guides** — `/how-to/size-a-qr-code`, `/how-to/qr-code-with-logo`,
+  `/how-to/qr-not-scanning`, `/how-to/print-qr-codes` — the print questions that decide whether a
+  code scans, with numbers instead of advice.
   Adding a page is one entry in `src/marketing/routes.ts`: the build writes the HTML, the sitemap
   and `llms.txt` from it.
 - A real **1200×630 social card** (`public/og.png`) with a working QR in it, built by

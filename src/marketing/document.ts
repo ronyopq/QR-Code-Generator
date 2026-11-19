@@ -26,15 +26,22 @@ export interface DocumentParts {
 const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
-/** `./assets/x.css` → `../assets/x.css` (pages live one directory deep). */
-function upOneLevel(href: string): string {
-  return href.replace(/^\.\//, '../').replace(/^\/(?!\/)/, '../')
+/** How many directories deep the page sits: `/a` → 1, `/how-to/a` → 2. */
+function pageDepth(path: string): number {
+  return path.split('/').filter(Boolean).length
+}
+
+/** `./assets/x.css` → `../assets/x.css`, or `../../assets/x.css` two levels down. */
+function upFrom(path: string, href: string): string {
+  const up = '../'.repeat(pageDepth(path))
+  return up + href.replace(/^\.?\//, '')
 }
 
 export function renderDocument(parts: DocumentParts): string {
   const canonical = absolute(parts.path)
   const ogImage = parts.ogImage ?? `${absolute(parts.path)}.png`
-  const css = upOneLevel(parts.cssHref)
+  const css = upFrom(parts.path, parts.cssHref)
+  const up = '../'.repeat(pageDepth(parts.path))
 
   return `<!doctype html>
 <html lang="en">
@@ -71,9 +78,9 @@ export function renderDocument(parts: DocumentParts): string {
     <meta name="theme-color" content="${SITE.themeColor}" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#07080a" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="light dark" />
-    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
-    <link rel="apple-touch-icon" href="../icons/icon-192.png" />
-    <link rel="manifest" href="../manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="${up}favicon.svg" />
+    <link rel="apple-touch-icon" href="${up}icons/icon-192.png" />
+    <link rel="manifest" href="${up}manifest.webmanifest" />
     <link rel="stylesheet" href="${css}" />
 
     <script type="application/ld+json">${parts.jsonld}</script>

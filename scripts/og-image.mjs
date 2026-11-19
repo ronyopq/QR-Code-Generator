@@ -67,6 +67,24 @@ const OVERRIDES = {
   '/menu-qr-code': { subtitle: 'For restaurants and cafés', facts: 'no subscription  ·  never expires' },
   '/whatsapp-qr-code': { subtitle: 'Opens a chat instantly', facts: 'prefilled message  ·  phone + desktop' },
   '/url-qr-code': { subtitle: 'Print-ready links', facts: 'PNG  ·  SVG  ·  PDF  ·  A4 sheet' },
+  '/how-to/size-a-qr-code': {
+    title: 'How big should a QR code be?',
+    subtitle: '1 cm of width per 10 cm of distance',
+    facts: '0.4 mm module floor  ·  size table',
+  },
+  '/how-to/qr-code-with-logo': {
+    subtitle: 'Level H, under a quarter of the width',
+    facts: 'error correction  ·  quiet zone  ·  test print',
+  },
+  '/how-to/qr-not-scanning': {
+    title: 'QR code not scanning?',
+    subtitle: 'Eight checks, most likely cause first',
+    facts: 'size  ·  contrast  ·  quiet zone  ·  payload',
+  },
+  '/how-to/print-qr-codes': {
+    subtitle: 'Vector in, 300 dpi floor, matte stock',
+    facts: 'SVG  ·  pure K black  ·  test one copy',
+  },
 }
 
 /** Short, clean subtitle: first clause of the lede, clipped on a word boundary. */
@@ -240,6 +258,7 @@ for (const card of CARDS) {
     card.out,
   ]
 
+  mkdirSync(path.dirname(card.out), { recursive: true })
   execFileSync('convert', args, { stdio: ['ignore', 'ignore', 'pipe'] })
   console.log(
     `✓ ${card.out}  (${count}×${count} QR at ${modulePx}px/module, title ${fit.size}px${fit.lines.length > 1 ? ', 2 lines' : ''})`,

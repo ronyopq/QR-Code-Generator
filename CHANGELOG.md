@@ -4,6 +4,28 @@ All notable changes to QRForge are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] — 2026-11-19
+
+### Added
+- **Four how-to guides**, one per question people actually type before buying anything:
+  `/how-to/size-a-qr-code` (how big should a QR code be — the 10:1 distance rule, a print-size
+  table, module math), `/how-to/qr-code-with-logo` (why level H makes a logo safe and where you
+  must never draw), `/how-to/qr-not-scanning` (eight faults, ordered most to least likely) and
+  `/how-to/print-qr-codes` (vector in, 300 dpi floor, pure K black, test one copy).
+- A **How-to** section on the home shell and a matching row in the FAQ card, separate from the
+  by-type guide list.
+
+### Changed
+- Landing pages are no longer assumed to sit one directory deep. `rel()`, `studioHref()`,
+  `renderDocument()` and the build's asset guard now count path segments, so a nested
+  `/how-to/<slug>/` links `../../assets/…`, `../../favicon.svg` and `../../manifest.webmanifest`
+  and still works on both the Vercel root and a GitHub Pages subpath.
+- Pages that are not a payload type may now omit `typeId`: their CTA opens the studio without
+  preselecting a type (a printing guide is not "the PDF type").
+- Every page has an explicit **ctaLabel**, so CTAs read "Make an SMS QR code" instead of
+  "Make your sms now" — and the comparison page no longer says "Make your static vs dynamic now".
+- 25 URLs in `sitemap.xml` and `llms.txt`; 25 OG cards.
+
 ## [1.7.0] — 2026-11-19
 
 ### Added

@@ -89,8 +89,17 @@ link it from the author's own blog (`ronysiddiqi.blogspot.com`, `ronysiddiqi.wor
 > targeting "dynamic qr code generator" would promise a feature the product does not have. The
 > static-vs-dynamic comparison covers the same query honestly.
 
-**Batch 3 (next):** how-to guides — `/how-to/size-a-qr-code` (how big should a qr code be),
-`/how-to/qr-code-with-logo`, `/how-to/qr-not-scanning` (qr code not scanning fix).
+**Batch 3 (1.8.0)** — the four how-to guides: `/how-to/size-a-qr-code` ("how big should a qr
+code be"), `/how-to/qr-code-with-logo`, `/how-to/qr-not-scanning` ("qr code not scanning fix") and
+`/how-to/print-qr-codes`. 25 URLs in total.
+
+These are the pre-purchase queries: someone searching "how big should a qr code be" is about to
+print something. Every number in them is checkable (10:1 distance rule, 0.4 mm module floor,
+300 dpi, level H = 30% redundancy), which is also what makes them quotable by answer engines.
+
+**Next:** nothing left in the page plan until the product grows — the honest next SEO step is the
+dynamic-QR feature (short link + redirect + scan counts), which is where "qr code analytics"
+traffic lives.
 
 To add one: append a `LandingRoute` to `src/marketing/routes.ts` (and mirror its path + label in
 `src/marketing/guides.ts`, which a test enforces). The prerender step writes `dist/<path>/index.html`,

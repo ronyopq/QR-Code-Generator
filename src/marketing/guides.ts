@@ -27,4 +27,8 @@ export const GUIDES: { path: string; navLabel: string }[] = [
   { path: '/linkedin-qr-code', navLabel: 'LinkedIn' },
   { path: '/social-qr-code', navLabel: 'Social hub' },
   { path: '/static-vs-dynamic-qr-code', navLabel: 'Static vs dynamic' },
+  { path: '/how-to/size-a-qr-code', navLabel: 'QR code size' },
+  { path: '/how-to/qr-code-with-logo', navLabel: 'QR code with logo' },
+  { path: '/how-to/qr-not-scanning', navLabel: 'QR code not scanning' },
+  { path: '/how-to/print-qr-codes', navLabel: 'Print a QR code' },
 ]

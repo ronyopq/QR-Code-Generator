@@ -92,7 +92,9 @@ for (const page of pages) {
   if (!h1) fail(`${page.path} has no <h1>`)
   if (pageTitle.replace(/&amp;/g, '&').length > 60) fail(`${page.path} title is ${pageTitle.length} chars, keep it ≤ 60`)
   if (!page.html.includes('<details')) fail(`${page.path} has no FAQ`)
-  if (!page.html.includes('../' + cssHref.replace(/^\.\//, ''))) fail(`${page.path} does not link the stylesheet relatively`)
+  const cssName = cssHref.replace(/^\.?\//, '')
+  if (!page.html.includes('../' + cssName) && !page.html.includes('../../' + cssName))
+    fail(`${page.path} does not link the stylesheet relatively`)
   const ld = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/.exec(page.html)?.[1]
   if (!ld) fail(`${page.path} has no JSON-LD`)
   JSON.parse(ld)

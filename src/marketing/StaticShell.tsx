@@ -121,7 +121,30 @@ export default function StaticShell() {
             One page per type: what it holds, how big to print it, and where it actually gets used.
           </p>
           <ul className="mt-5 grid gap-3 sm:grid-cols-2">
-            {LANDING_ROUTES.map((r) => (
+            {LANDING_ROUTES.filter((r) => !r.group).map((r) => (
+              <li key={r.path}>
+                <a
+                  href={`./${r.path.replace(/^\//, "")}`}
+                  className="block rounded-xl border border-line bg-surface p-4 transition-colors hover:border-line-strong"
+                >
+                  <span className="block text-[13.5px] font-semibold text-fg">{r.navLabel}</span>
+                  <span className="mt-1 block text-[12.5px] leading-relaxed text-muted">{r.description}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section id="how-to" className="mt-14">
+          <h2 className="text-[20px] font-semibold tracking-[-0.02em] sm:text-[24px]">
+            How to size, print and fix a QR code
+          </h2>
+          <p className="mt-2 max-w-2xl text-[13.5px] leading-relaxed text-muted">
+            The questions that decide whether a code actually scans — answered without a blog
+            around them.
+          </p>
+          <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+            {LANDING_ROUTES.filter((r) => r.group === "How-to").map((r) => (
               <li key={r.path}>
                 <a
                   href={`./${r.path.replace(/^\//, "")}`}

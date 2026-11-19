@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
-import LandingPage from './LandingPage'
+import LandingPage, { rel, studioHref } from './LandingPage'
 import { LANDING_ROUTES, findRoute, sitemapEntries } from './routes'
 import { GUIDES } from './guides'
 import { buildLandingStructuredData, serialize } from './structuredData'
@@ -27,13 +27,18 @@ describe('landing route table', () => {
     for (const p of paths) {
       expect(p.startsWith('/')).toBe(true)
       expect(p.endsWith('/')).toBe(false)
-      expect(p).toMatch(/^\/[a-z0-9-]+$/)
+      expect(p).toMatch(/^\/[a-z0-9-]+(\/[a-z0-9-]+)?$/)
     }
   })
 
   it('points every page at a real QR type', () => {
     const ids = new Set<string>(QR_TYPES.map((t) => t.id))
-    for (const r of LANDING_ROUTES) expect(ids.has(r.typeId)).toBe(true)
+    for (const r of LANDING_ROUTES) {
+      if (r.typeId) expect(ids.has(r.typeId), `${r.path} → ${r.typeId}`).toBe(true)
+    }
+    // payload-type pages must preselect a type; guides need not
+    const typed = LANDING_ROUTES.filter((r) => !r.group)
+    expect(typed.every((r) => Boolean(r.typeId))).toBe(true)
   })
 
   it('keeps titles and descriptions inside SERP limits', () => {
@@ -78,6 +83,19 @@ describe('landing route table', () => {
     expect(GUIDES).toEqual(LANDING_ROUTES.map((r) => ({ path: r.path, navLabel: r.navLabel })))
   })
 
+  it('keeps guide pages honest about depth and intent', () => {
+    for (const r of LANDING_ROUTES) {
+      expect(r.ctaLabel ?? '', r.path).toMatch(/^.{0,40}$/)
+      expect(rel(r.path, '/'), r.path).toBe('../'.repeat(r.path.split('/').filter(Boolean).length))
+      if (r.group) {
+        expect(r.path.startsWith('/how-to/'), r.path).toBe(true)
+        expect(r.typeId, `${r.path} must not preselect a payload type`).toBeUndefined()
+      }
+    }
+    const howTo = LANDING_ROUTES.filter((r) => r.group === 'How-to')
+    expect(howTo).toHaveLength(4)
+  })
+
   it('feeds the sitemap automatically', () => {
     const xml = buildSitemap('2026-11-19')
     const entries = sitemapEntries()
@@ -99,10 +117,10 @@ describe('landing page markup', () => {
       expect(html).toContain(route.h1)
       for (const f of route.faq) expect(html).toContain(f.q)
       expect(html).toContain('Breadcrumb')
-      // links into the studio with the type preselected
-      expect(html).toContain(`../?type=${route.typeId}`)
-      // and to its siblings
-      for (const rel of route.related) expect(html).toContain(`..${rel}`)
+      // links into the studio, with the type preselected when the page has one
+      expect(html).toContain(studioHref(route.path, route.typeId))
+      // and to its siblings, at the right depth
+      for (const sibling of route.related) expect(html).toContain(rel(route.path, sibling))
     }
   })
 })
@@ -134,6 +152,21 @@ describe('landing document', () => {
     expect(html).not.toContain('type="module"')
     expect(html).not.toContain('modulepreload')
     expect(html.match(/<script/g)).toHaveLength(2) // theme + JSON-LD
+  })
+
+  it('walks up two levels for nested guide URLs', () => {
+    const nested = renderDocument({
+      title: 'How big should a QR code be? A print size table',
+      description: 'x'.repeat(120),
+      path: '/how-to/size-a-qr-code',
+      body: '',
+      jsonld: '{}',
+      cssHref: './assets/index-abc123.css',
+    })
+    expect(nested).toContain('href="../../assets/index-abc123.css"')
+    expect(nested).toContain('href="../../favicon.svg"')
+    expect(nested).toContain('href="../../manifest.webmanifest"')
+    expect(nested).toContain('href="https://qrforge-bd.vercel.app/how-to/size-a-qr-code"')
   })
 
   it('escapes copy correctly', () => {
