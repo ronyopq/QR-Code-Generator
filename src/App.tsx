@@ -13,6 +13,7 @@ import { downloadQR } from './lib/download'
 import { addHistory, loadHistory, saveHistory } from './lib/storage'
 import { bookmarkState } from './lib/bookmark'
 import { defaultConfig, type HistoryItem, type QRConfig, type QRTypeId } from './types'
+import { configFromLocation } from './lib/deepLink'
 import QRPreview from './components/QRPreview'
 import TypeForm from './components/TypeForm'
 import Customizer from './components/Customizer'
@@ -62,7 +63,8 @@ function Shell() {
   const toast = useToast()
   const reduce = useReducedMotion()
   const [view, setView] = useState<View>('generator')
-  const [config, setConfig] = useState<QRConfig>(defaultConfig)
+  // A landing page can hand over the exact type it just explained (`?type=wifi`).
+  const [config, setConfig] = useState<QRConfig>(configFromLocation)
   const [dark, setDark] = useState(() => !document.documentElement.classList.contains('light'))
   const [drawer, setDrawer] = useState(false)
   const [palette, setPalette] = useState(false)

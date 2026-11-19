@@ -4,6 +4,7 @@ import StaticShell from './StaticShell'
 import { FAQ, FEATURES, HOW_TO, SITE, SUMMARY, absolute } from './content'
 import { buildStructuredData, serializeStructuredData, typesByCategory } from './structuredData'
 import { QR_TYPES } from '../data/qrTypes'
+import { GUIDES } from './guides'
 
 describe('SEO copy', () => {
   it('keeps the title and description inside what search engines display', () => {
@@ -124,8 +125,10 @@ describe('static shell (what crawlers actually read)', () => {
     }
   })
 
-  it('carries internal anchors and the real source link', () => {
-    for (const anchor of ['#types', '#how-to', '#faq']) expect(html).toContain(`href="${anchor}"`)
+  it('carries internal anchors, guide links and the real source link', () => {
+    for (const section of ['types', 'how-to', 'faq', 'guides']) expect(html).toContain(`id="${section}"`)
+    for (const anchor of ['#types', '#faq']) expect(html).toContain(`href="./${anchor}"`)
+    for (const guide of GUIDES) expect(html).toContain(`href="./${guide.path.slice(1)}"`)
     expect(html).toContain(`href="${SITE.repo}"`)
   })
 

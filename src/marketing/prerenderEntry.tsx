@@ -1,16 +1,23 @@
 /**
  * Build-time prerender entry — bundled by `scripts/prerender.mjs` with esbuild
- * and executed in Node. It turns the crawlable shell and the JSON-LD graph into
- * plain strings, plus robots.txt / sitemap.xml / llms.txt, so a single run of
- * `npm run build` produces everything a search engine needs.
+ * and executed in Node. One run produces:
+ *
+ *   • the home shell injected into dist/index.html
+ *   • a complete, JS-free HTML document for every landing page
+ *   • robots.txt, sitemap.xml and llms.txt from the same route table
+ *
+ * Nothing here may touch the DOM: this code runs on a server.
  */
 import { renderToStaticMarkup } from 'react-dom/server'
 import StaticShell from './StaticShell'
+import LandingPage from './LandingPage'
 import { FAQ, SITE, SUMMARY, absolute } from './content'
 import { FEATURES } from './content'
 import { QR_TYPES } from '../data/qrTypes'
 import { DEVELOPER } from '../data/developer'
-import { serializeStructuredData } from './structuredData'
+import { LANDING_ROUTES, sitemapEntries } from './routes'
+import { buildLandingStructuredData, buildStructuredData, serialize, serializeStructuredData } from './structuredData'
+import { renderDocument } from './document'
 
 export interface PrerenderOutput {
   html: string
@@ -18,12 +25,16 @@ export interface PrerenderOutput {
   robots: string
   sitemap: string
   llms: string
+  /** One self-contained document per landing page. */
+  pages: { path: string; html: string }[]
 }
 
-/** Pages that exist as real URLs. Landing pages get appended here later. */
-const ROUTES: { path: string; priority: string; changefreq: string }[] = [
-  { path: '/', priority: '1.0', changefreq: 'weekly' },
-]
+export interface PrerenderOptions {
+  /** Stylesheet href as emitted by Vite (`./assets/index-abc.css`). */
+  cssHref?: string
+  /** Build date for sitemap lastmod. */
+  today?: string
+}
 
 /** Crawlers we explicitly welcome — including the AI answer engines. */
 const AI_AGENTS = [
@@ -42,7 +53,7 @@ const AI_AGENTS = [
 function buildRobots(): string {
   const blocks = AI_AGENTS.map((agent) => `User-agent: ${agent}\nAllow: /`).join('\n\n')
   return `# ${SITE.name} — ${absolute('/')}
-# Free, open source, nothing to crawl but the studio. All welcome.
+# Free, open source. Every page is static HTML, so there is nothing to skip.
 
 User-agent: *
 Allow: /
@@ -55,12 +66,15 @@ Sitemap: ${absolute('/sitemap.xml')}
 `
 }
 
-function buildSitemap(today: string): string {
-  const urls = ROUTES.map(
-    (r) =>
-      `  <url>\n    <loc>${absolute(r.path)}</loc>\n    <lastmod>${today}</lastmod>\n` +
-      `    <changefreq>${r.changefreq}</changefreq>\n    <priority>${r.priority}</priority>\n  </url>`,
-  ).join('\n')
+export function buildSitemap(today: string): string {
+  const urls = sitemapEntries()
+    .map(
+      (r) =>
+        `  <url>\n    <loc>${absolute(r.path)}</loc>\n` +
+        `    <lastmod>${r.lastmod ?? today}</lastmod>\n` +
+        `    <changefreq>${r.changefreq}</changefreq>\n    <priority>${r.priority}</priority>\n  </url>`,
+    )
+    .join('\n')
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls}
@@ -69,12 +83,15 @@ ${urls}
 }
 
 /**
- * llms.txt — the emerging convention answer engines look for: one plain-text
- * summary of what the site is, what it offers and where the facts live.
+ * llms.txt — the convention answer engines look for: one plain-text summary of
+ * what the site is, what it offers and where the durable facts live.
  */
 function buildLlms(): string {
   const types = QR_TYPES.map((t) => `- ${t.label}: ${t.desc}`).join('\n')
   const faq = FAQ.map((f) => `### ${f.q}\n${f.a}`).join('\n\n')
+  const pages = LANDING_ROUTES.map(
+    (r) => `- [${r.navLabel}](${absolute(r.path)}/): ${r.description}`,
+  ).join('\n')
   return `# ${SITE.name}
 
 > ${SUMMARY}
@@ -85,6 +102,10 @@ function buildLlms(): string {
 - Author: ${DEVELOPER.name} (${DEVELOPER.handle}), ${DEVELOPER.role}, ${DEVELOPER.location}
 - Runs entirely in the browser: nothing is uploaded, codes are static and never expire
 - Installable as an offline PWA
+
+## Pages
+- [QR code generator studio](${absolute('/')}): all 20 types, logos, presets, scan check and 8 export formats
+${pages}
 
 ## QR types (${QR_TYPES.length})
 ${types}
@@ -100,12 +121,30 @@ ${faq}
 `
 }
 
-export function render(version: string, today = new Date().toISOString().slice(0, 10)): PrerenderOutput {
+export function render(version: string, opts: PrerenderOptions = {}): PrerenderOutput {
+  const today = opts.today ?? new Date().toISOString().slice(0, 10)
+
+  const pages = opts.cssHref
+    ? LANDING_ROUTES.map((route) => ({
+        path: route.path,
+        html: renderDocument({
+          title: route.title,
+          description: route.description,
+          path: route.path,
+          body: renderToStaticMarkup(<LandingPage route={route} />),
+          jsonld: serialize(buildLandingStructuredData(route, version)),
+          cssHref: opts.cssHref!,
+          ogImage: absolute(`/og${route.path}.png`),
+        }),
+      }))
+    : []
+
   return {
     html: renderToStaticMarkup(<StaticShell />),
     jsonld: serializeStructuredData(version),
     robots: buildRobots(),
     sitemap: buildSitemap(today),
     llms: buildLlms(),
+    pages,
   }
 }

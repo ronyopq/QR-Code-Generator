@@ -69,20 +69,27 @@ link it from the author's own blog (`ronysiddiqi.blogspot.com`, `ronysiddiqi.wor
 - **Long-tail** ("wifi qr code generator with logo", "vcard qr code free"):
   reachable, and that is where the traffic actually is.
 
-### The next lever (phase 2, the real growth work)
+### Landing pages (phase 2)
 
-Landing pages — one real URL and one unique page per intent — are worth more than any meta tag:
+**Shipped in 1.6.0** — five real URLs, each a static JS-free page:
 
 | Route | Target query |
 |---|---|
-| `/wifi-qr-code` | wifi qr code generator |
-| `/vcard-qr-code` | vcard qr code / digital business card qr |
-| `/menu-qr-code` | restaurant menu qr code |
-| `/whatsapp-qr-code` | whatsapp qr code generator |
-| `/url-qr-code` | url qr code generator free |
-| `/how-to/size-a-qr-code` | how big should a qr code be |
-| `/how-to/qr-code-with-logo` | qr code with logo still scan |
-| `/how-to/qr-not-scanning` | qr code not scanning fix |
+| `/wifi-qr-code` ✅ | wifi qr code generator |
+| `/vcard-qr-code` ✅ | vcard qr code / digital business card qr |
+| `/menu-qr-code` ✅ | restaurant menu qr code |
+| `/whatsapp-qr-code` ✅ | whatsapp qr code generator |
+| `/url-qr-code` ✅ | url qr code generator free |
+
+**Batch 2 (next):** the remaining 15 types — email, phone, sms, text, location, event, instagram,
+facebook, youtube, telegram, linkedin, pdf, app-download, social, dynamic.
+
+**Batch 3:** guides — `/how-to/size-a-qr-code` (how big should a qr code be),
+`/how-to/qr-code-with-logo`, `/how-to/qr-not-scanning` (qr code not scanning fix).
+
+To add one: append a `LandingRoute` to `src/marketing/routes.ts` (and mirror its path + label in
+`src/marketing/guides.ts`, which a test enforces). The prerender step writes `dist/<path>/index.html`,
+adds the sitemap entry and the `llms.txt` line; run `node scripts/og-image.mjs` to add its card.
 
 Each page needs: a unique `<h1>`, 400–700 words of real answer-first copy, the JSON-LD for that
 intent (`HowTo` / `FAQPage`), its own `og:image`, an internal link back to the studio, and an entry

@@ -12,6 +12,7 @@
  */
 import { ChevronDown, HelpCircle } from 'lucide-react'
 import { FAQ, HOW_TO } from '../marketing/content'
+import { GUIDES } from '../marketing/guides'
 
 export default function FaqSection() {
   return (
@@ -54,6 +55,24 @@ export default function FaqSection() {
             </details>
           ))}
         </div>
+      </div>
+
+      {/* Internal links to the static guides — crawlable, and genuinely useful
+          when someone wants the long version of "how big should I print this". */}
+      <div className="rounded-xl border border-line bg-surface p-4 lg:col-span-2">
+        <h2 className="font-mono text-[9.5px] uppercase tracking-[0.16em] text-subtle">Guides by type</h2>
+        <ul className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1.5">
+          {GUIDES.map((r) => (
+            <li key={r.path}>
+              <a
+                href={`./${r.path.replace(/^\//, '')}`}
+                className="font-sans text-[12px] font-medium text-accent-strong underline decoration-line-strong underline-offset-2 hover:decoration-current"
+              >
+                {r.navLabel}
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   )

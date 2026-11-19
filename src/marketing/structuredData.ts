@@ -10,6 +10,7 @@ import { DEVELOPER } from '../data/developer'
 import { REPO } from '../data/repo'
 import { QR_TYPES } from '../data/qrTypes'
 import { FAQ, FEATURES, HOW_TO, SITE, SUMMARY, absolute } from './content'
+import type { LandingRoute } from './routes'
 
 export type JsonLd = Record<string, unknown>
 
@@ -141,4 +142,75 @@ export function typesByCategory(): { category: string; labels: string[] }[] {
     map.set(t.category, list)
   }
   return [...map.entries()].map(([category, labels]) => ({ category, labels }))
+}
+
+/**
+ * Structured data for one landing page: the page itself, how it sits under the
+ * site, its breadcrumb, its type-specific how-to and its FAQ. Cross-references
+ * use absolute @ids so the graph joins up with the home page's entities.
+ */
+export function buildLandingStructuredData(route: LandingRoute, version: string): JsonLd {
+  const pageUrl = absolute(route.path)
+  const graph: JsonLd[] = [
+    {
+      '@type': 'WebPage',
+      '@id': `${pageUrl}#webpage`,
+      url: pageUrl,
+      name: route.h1,
+      headline: route.title,
+      description: route.description,
+      inLanguage: 'en',
+      isPartOf: { '@id': `${SITE.url}/#website` },
+      about: { '@id': `${SITE.url}/#app` },
+      primaryImageOfPage: { '@type': 'ImageObject', url: absolute(`/og${route.path}.png`), width: 1200, height: 630 },
+      datePublished: route.updated,
+      dateModified: route.updated,
+      publisher: { '@id': `${SITE.url}/#organization` },
+      author: { '@id': `${SITE.url}/#author` },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${pageUrl}#breadcrumb`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: SITE.name, item: absolute('/') },
+        { '@type': 'ListItem', position: 2, name: route.navLabel, item: pageUrl },
+      ],
+    },
+    {
+      '@type': 'HowTo',
+      '@id': `${pageUrl}#howto`,
+      name: route.howTo.name,
+      description: route.description,
+      totalTime: 'PT3M',
+      estimatedCost: { '@type': 'MonetaryAmount', currency: 'USD', value: 0 },
+      tool: [{ '@type': 'HowToTool', name: 'A web browser' }],
+      step: route.howTo.steps.map((s, i) => ({
+        '@type': 'HowToStep',
+        position: i + 1,
+        name: s.name,
+        text: s.text,
+        url: `${pageUrl}#howto`,
+      })),
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      isPartOf: { '@id': `${pageUrl}#webpage` },
+      mainEntity: route.faq.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+  ]
+
+  return { '@context': 'https://schema.org', '@graph': graph }
+}
+
+/** Safe inline JSON for a <script> tag. */
+export function serialize(value: JsonLd): string {
+  return JSON.stringify(value)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
 }
