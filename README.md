@@ -22,6 +22,12 @@ no backend, no sign-up, no watermarks. Deploys free on **GitHub Pages**.
 Both sites build from the same commit with `npm run build` (Vite, `dist/`).
 
 
+## 🗺️ Roadmap
+
+What is worth building next — reliability gaps, scan-safety checks, Supabase-powered dynamic QR,
+Bengali localisation, tests and CI — is listed with evidence, effort and a sprint plan in
+**[ROADMAP.md](./ROADMAP.md)**.
+
 ## ✨ Features
 
 ### 20 QR types
