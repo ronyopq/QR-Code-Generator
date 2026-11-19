@@ -83,36 +83,36 @@ export function toStylingOptions(cfg: QRConfig, payload: string): Options {
     colorStops: [{ offset: 0, color: from }, { offset: 1, color: to }],
   })
 
-  let dotsOptions: Options['dotsOptions']
-  let cornersSquareOptions: Options['cornersSquareOptions']
-  let cornersDotOptions: Options['cornersDotOptions']
+  // QRCodeStyling.update() deep-merges the next options over the live ones, and its
+  // mergeDeep skips `undefined` values — an *omitted* key therefore keeps its old
+  // value. So every key that can be conditional is written on every call, as
+  // `undefined` when it is unused (that does remove the previous value).
+  // Without this, picking a gradient preset and then Classic / Pastel left the old
+  // gradient painted on the preview, while the download (a fresh instance) was fine.
+  type Paint = { color?: string; gradient?: NonNullable<Options['dotsOptions']>['gradient'] }
+  const solid = (color: string): Paint => ({ color, gradient: undefined })
+  const linear = (from: string, to: string, mid?: string): Paint => ({ color: undefined, gradient: grad(from, to, mid) })
+  const radialPaint = (from: string, to: string): Paint => ({ color: undefined, gradient: radial(from, to) })
 
-  if (cfg.colorMode === 'single') {
-    dotsOptions = { color: cfg.fgColor, type: cfg.bodyStyle }
-    cornersSquareOptions = { color: cfg.fgColor, type: cfg.eyeStyle }
-    cornersDotOptions = { color: cfg.fgColor, type: cfg.eyeStyle === 'extra-rounded' ? 'dot' : cfg.eyeStyle }
-  } else if (cfg.colorMode === 'dual') {
-    dotsOptions = { color: cfg.fgColor, type: cfg.bodyStyle }
-    cornersSquareOptions = { color: cfg.fgColor2, type: cfg.eyeStyle }
-    cornersDotOptions = { color: cfg.fgColor2, type: cfg.eyeStyle === 'extra-rounded' ? 'dot' : cfg.eyeStyle }
-  } else if (cfg.colorMode === 'gradient') {
-    dotsOptions = { gradient: grad(cfg.gradientFrom, cfg.gradientTo), type: cfg.bodyStyle }
-    cornersSquareOptions = { gradient: grad(cfg.gradientFrom, cfg.gradientTo), type: cfg.eyeStyle }
-    cornersDotOptions = { gradient: grad(cfg.gradientFrom, cfg.gradientTo), type: cfg.eyeStyle === 'extra-rounded' ? 'dot' : cfg.eyeStyle }
-  } else if (cfg.colorMode === 'multi') {
-    dotsOptions = { gradient: grad(cfg.gradientFrom, cfg.gradientTo, cfg.gradientMid), type: cfg.bodyStyle }
-    cornersSquareOptions = { gradient: grad(cfg.gradientFrom, cfg.gradientTo, cfg.gradientMid), type: cfg.eyeStyle }
-    cornersDotOptions = { gradient: grad(cfg.gradientFrom, cfg.gradientTo, cfg.gradientMid), type: cfg.eyeStyle === 'extra-rounded' ? 'dot' : cfg.eyeStyle }
-  } else {
-    dotsOptions = { gradient: radial(cfg.gradientFrom, cfg.gradientTo), type: cfg.bodyStyle }
-    cornersSquareOptions = { gradient: radial(cfg.gradientFrom, cfg.gradientTo), type: cfg.eyeStyle }
-    cornersDotOptions = { gradient: radial(cfg.gradientFrom, cfg.gradientTo), type: cfg.eyeStyle === 'extra-rounded' ? 'dot' : cfg.eyeStyle }
-  }
+  const gradientPaint =
+    cfg.colorMode === 'gradient' ? linear(cfg.gradientFrom, cfg.gradientTo)
+      : cfg.colorMode === 'multi' ? linear(cfg.gradientFrom, cfg.gradientTo, cfg.gradientMid)
+        : cfg.colorMode === 'radial' ? radialPaint(cfg.gradientFrom, cfg.gradientTo)
+          : null
 
-  let backgroundOptions: Options['backgroundOptions']
-  if (cfg.bgMode === 'transparent') backgroundOptions = { color: 'rgba(0,0,0,0)' }
-  else if (cfg.bgMode === 'gradient') backgroundOptions = { gradient: grad(cfg.bgGradientFrom, cfg.bgGradientTo) }
-  else backgroundOptions = { color: cfg.bgColor } // solid + pattern fallback
+  const dotPaint = gradientPaint ?? solid(cfg.fgColor)
+  // dual = dots in the first colour, eyes in the second; every other mode is one paint.
+  const eyePaint = gradientPaint ?? solid(cfg.colorMode === 'dual' ? cfg.fgColor2 : cfg.fgColor)
+  const eyeDot = cfg.eyeStyle === 'extra-rounded' ? 'dot' : cfg.eyeStyle
+
+  const dotsOptions: Options['dotsOptions'] = { ...dotPaint, type: cfg.bodyStyle }
+  const cornersSquareOptions: Options['cornersSquareOptions'] = { ...eyePaint, type: cfg.eyeStyle }
+  const cornersDotOptions: Options['cornersDotOptions'] = { ...eyePaint, type: eyeDot }
+
+  const backgroundOptions: Options['backgroundOptions'] =
+    cfg.bgMode === 'transparent' ? { color: 'rgba(0,0,0,0)', gradient: undefined }
+      : cfg.bgMode === 'gradient' ? { color: undefined, gradient: grad(cfg.bgGradientFrom, cfg.bgGradientTo) }
+        : { color: cfg.bgColor, gradient: undefined } // solid + pattern fallback
 
   return {
     width: cfg.width,
@@ -134,7 +134,8 @@ export function toStylingOptions(cfg: QRConfig, payload: string): Options {
       margin: cfg.logoMargin,
       crossOrigin: 'anonymous',
     },
-    ...(cfg.logo ? { image: cfg.logo } : {}),
+    // always present: removing a logo has to clear the merged image too.
+    image: cfg.logo || undefined,
   }
 }
 
