@@ -18,6 +18,7 @@ import TypeForm from './components/TypeForm'
 import Customizer from './components/Customizer'
 import StylePresets from './components/StylePresets'
 import DownloadPanel from './components/DownloadPanel'
+import ScanCheck from './components/ScanCheck'
 import BulkGenerator from './components/BulkGenerator'
 import HistoryPanel from './components/HistoryPanel'
 import TemplateLibrary from './components/TemplateLibrary'
@@ -409,6 +410,7 @@ function Shell() {
                       />
                       <div className="flex flex-col gap-2">
                         <QRPreview config={config} payload={payload} />
+                        <ScanCheck config={config} payload={payload} onChange={patch} />
                         <DownloadPanel config={config} payload={payload} />
                       </div>
                     </div>

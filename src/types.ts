@@ -94,7 +94,7 @@ export const defaultConfig = (): QRConfig => ({
   logoBorder: false,
   width: 600,
   height: 600,
-  margin: 16,
+  margin: 96,
   errorCorrection: 'M',
   quality: 'hd',
 })
