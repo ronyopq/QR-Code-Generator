@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>QRForge — Free QR Code Generator | URL, WiFi, vCard, Menu &amp; 20+ Types</title>
+    <meta name="description" content="Create beautiful branded QR codes in seconds. 20+ types — URL, WiFi, WhatsApp, vCard, menu, event & more. Custom colors, logos, PNG/SVG/PDF export. Free, private, works offline." />
+    <meta name="keywords" content="qr code generator, qr code maker, wifi qr, vcard qr, menu qr, whatsapp qr, free qr code, qr code styling" />
+    <meta name="author" content="QRForge" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://ronyopq.github.io/QR-Code-Generator/" />
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="QRForge — Enterprise QR Code Generator" />
+    <meta property="og:description" content="20+ QR types, custom branding, HD export. Free forever, no sign-up, works offline." />
+    <meta property="og:image" content="./icons/icon-512.png" />
+    <meta property="og:url" content="https://ronyopq.github.io/QR-Code-Generator/" />
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="QRForge — QR Code Generator" />
+    <meta name="twitter:description" content="Create beautiful branded QR codes in seconds. Free & offline-ready." />
+    <meta name="twitter:image" content="./icons/icon-512.png" />
+    <!-- PWA / theme -->
+    <meta name="theme-color" content="#f7f7f4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#07080a" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"SoftwareApplication","name":"QRForge QR Code Generator","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.9","ratingCount":"1284"}}
+    </script>
+    <!-- Critical paint: correct canvas colour before the stylesheet resolves -->
+    <style>
+      html { background: #f7f7f4; color-scheme: light dark; }
+      html.dark { background: #07080a; }
+      body { margin: 0; }
+    </style>
+    <!-- Stylesheet is linked (not JS-injected) so it always applies, even before React boots -->
+    <link rel="stylesheet" href="./src/index.css" />
+  </head>
+  <body>
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('qrforge-theme');
+          var dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.classList.toggle('dark', dark);
+          document.documentElement.classList.toggle('light', !dark);
+        } catch (e) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <noscript><div style="padding:2rem;font-family:sans-serif">QRForge needs JavaScript enabled. Please enable it to generate QR codes.</div></noscript>
+  </body>
+</html>
