@@ -97,9 +97,11 @@ These are the pre-purchase queries: someone searching "how big should a qr code 
 print something. Every number in them is checkable (10:1 distance rule, 0.4 mm module floor,
 300 dpi, level H = 30% redundancy), which is also what makes them quotable by answer engines.
 
-**Next:** nothing left in the page plan until the product grows — the honest next SEO step is the
-dynamic-QR feature (short link + redirect + scan counts), which is where "qr code analytics"
-traffic lives.
+**Next:** the page plan is complete, and a dynamic-QR feature is **off the table** (decision,
+19 Nov 2026) — a static code cannot report scans, and building a redirect backend would break the
+one promise the whole site makes. So `/static-vs-dynamic-qr-code` keeps owning the "qr code
+analytics" queries by answering them honestly, and the remaining work is keeping the 25 pages
+accurate rather than adding new ones.
 
 To add one: append a `LandingRoute` to `src/marketing/routes.ts` (and mirror its path + label in
 `src/marketing/guides.ts`, which a test enforces). The prerender step writes `dist/<path>/index.html`,

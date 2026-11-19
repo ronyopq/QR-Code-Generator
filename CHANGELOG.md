@@ -4,6 +4,15 @@ All notable changes to QRForge are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.1] — 2026-11-19
+
+### Changed
+- **Dynamic QR is cancelled** (decision, 19 Nov 2026). The Supabase short-link + redirect +
+  scan-analytics plan is removed from the roadmap, not postponed: the feature only works by
+  putting a server between the print and the destination, which contradicts what the site
+  promises — nothing uploaded, no account, codes that never expire. README now says so under
+  Privacy, and `SEO.md` records why the comparison page keeps owning those queries instead.
+
 ## [1.8.0] — 2026-11-19
 
 ### Added
