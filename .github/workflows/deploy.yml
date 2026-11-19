@@ -67,7 +67,10 @@ jobs:
 
   deploy:
     needs: build
-    if: needs.build.outputs.pages == 'true'
+    # The github-pages environment only accepts deployments from the default
+    # branch, so feature branches build (and prove the app compiles) without
+    # a red deploy job.
+    if: needs.build.outputs.pages == 'true' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
