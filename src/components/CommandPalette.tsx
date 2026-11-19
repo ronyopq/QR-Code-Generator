@@ -1,10 +1,11 @@
 import { Command } from 'cmdk'
 import {
-  BarChart3, Bookmark, Copy, Download, FileSpreadsheet, Heart, History, LayoutTemplate, Moon,
+  BarChart3, Bookmark, Copy, Download, FileSpreadsheet, Github, Heart, History, LayoutTemplate, Moon,
   QrCode, Save, Search, Smartphone, Sun, type LucideIcon,
 } from 'lucide-react'
 import { QR_TYPES } from '../data/qrTypes'
 import type { QRTypeId } from '../types'
+import { REPO, openRepo } from '../data/repo'
 
 export type CmdView = 'generator' | 'templates' | 'bulk' | 'history' | 'analytics'
 
@@ -97,6 +98,10 @@ export default function CommandPalette({
           </Command.Item>
           <Command.Item value="install app pwa" onSelect={run(onInstall)} className={item}><Smartphone size={14} className="text-muted" /> Install app</Command.Item>
           <Command.Item value="bookmark save site" onSelect={run(onBookmark)} className={item}><Bookmark size={14} className="text-muted" /> Bookmark QRForge</Command.Item>
+          <Command.Item value="github source code repository ronyopq open" onSelect={run(openRepo)} className={item}>
+            <Github size={14} className="text-muted" /> Source on GitHub
+            <span className="ml-auto truncate font-mono text-[9px] uppercase tracking-wide text-subtle">{REPO.label}</span>
+          </Command.Item>
           <Command.Item value="credits open source libraries" onSelect={run(onCredits)} className={item}><Sparkle /> Credits &amp; licences</Command.Item>
           <Command.Item value="developer rony siddiqi profile contact about" onSelect={run(onDeveloper)} className={item}>
             <Heart size={14} className="text-danger" /> Developer profile

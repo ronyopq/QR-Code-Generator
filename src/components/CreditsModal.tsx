@@ -1,6 +1,7 @@
-import { BadgeCheck, ExternalLink, Heart, Sparkles } from 'lucide-react'
+import { BadgeCheck, ExternalLink, Github, Heart, Sparkles } from 'lucide-react'
 import Modal from './Modal'
 import { DEVELOPER } from '../data/developer'
+import { REPO } from '../data/repo'
 
 interface Credit {
   name: string
@@ -114,9 +115,21 @@ export default function CreditsModal({ open, onClose, onDeveloper }: { open: boo
             )}
           </div>
         </div>
-        <p className="flex items-center justify-center gap-1.5 font-sans text-[11px] text-muted">
-          Made with <Heart size={11} className="text-danger" fill="currentColor" aria-hidden="true" /> and no backend.
-        </p>
+        <div className="flex flex-wrap items-center justify-center gap-2 font-sans text-[11px] text-muted">
+          <span className="flex items-center gap-1.5">
+            Made with <Heart size={11} className="text-danger" fill="currentColor" aria-hidden="true" /> and no backend.
+          </span>
+          <span className="h-3 w-px bg-line" aria-hidden="true" />
+          <a
+            href={REPO.url}
+            target="_blank"
+            rel="noreferrer"
+            title={`Source code — ${REPO.label}`}
+            className="inline-flex items-center gap-1 font-mono text-[9.5px] uppercase tracking-[0.1em] text-muted transition-colors hover:text-accent-strong"
+          >
+            <Github size={11} /> source
+          </a>
+        </div>
       </div>
     </Modal>
   )
