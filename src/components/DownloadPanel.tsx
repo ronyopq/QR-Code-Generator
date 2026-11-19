@@ -4,6 +4,7 @@ import type { QRConfig } from '../types'
 import { downloadQR } from '../lib/download'
 import { useToast } from './Toast'
 import { Panel } from './ui'
+import { useI18n } from '../lib/i18n'
 
 const FORMATS = [
   { id: 'png', label: 'PNG', note: 'web + print', hot: true },
@@ -26,6 +27,7 @@ const QUALITIES: { id: QRConfig['quality']; label: string; px: string }[] = [
 
 export default function DownloadPanel({ config, payload }: { config: QRConfig; payload: string }) {
   const toast = useToast()
+  const { t } = useI18n()
   const [busy, setBusy] = useState<string | null>(null)
   const ready = payload.trim().length > 0
 
@@ -35,19 +37,19 @@ export default function DownloadPanel({ config, payload }: { config: QRConfig; p
       await downloadQR(config, payload, fmt)
       toast.push({
         variant: 'success',
-        title: `${fmt.toUpperCase()} exported`,
-        description: `${config.width}×${config.height}px · ${config.quality.toUpperCase()} quality`,
+        title: t('export.done', { fmt: fmt.toUpperCase() }),
+        description: `${config.width}×${config.height}px · ${config.quality.toUpperCase()}`,
       })
     } catch (e) {
       console.error(e)
-      toast.push({ variant: 'error', title: 'Export failed', description: 'Try PNG or SVG — the renderer hit an error.' })
+      toast.push({ variant: 'error', title: t('export.failed'), description: t('export.failedBody') })
     } finally {
       setBusy(null)
     }
   }
 
   return (
-    <Panel head={{ label: 'Export', icon: Download, right: (
+    <Panel head={{ label: t('panel.export'), icon: Download, right: (
       <span className="font-mono text-[9.5px] uppercase tracking-wide text-muted">
         {config.width}×{config.height}px
       </span>
@@ -59,7 +61,7 @@ export default function DownloadPanel({ config, payload }: { config: QRConfig; p
               key={f.id}
               onClick={() => run(f.id)}
               disabled={!!busy || !ready}
-              title={ready ? `${f.label} export` : 'Add content first'}
+              title={ready ? `${f.label}` : t('export.disabled')}
               className={`group relative flex flex-col items-center gap-0.5 rounded-lg border border-line bg-elevated px-1 py-2.5 transition-colors hover:border-accent/50 hover:bg-inset disabled:opacity-40     ${f.id === 'zip' ? 'col-span-2 flex-row justify-center gap-2' : ''}`}
             >
               {busy === f.id ? <Loader2 size={13} className="animate-spin text-accent-strong" /> : f.id === 'zip' ? <Package size={13} className="text-muted" /> : null}
@@ -71,7 +73,7 @@ export default function DownloadPanel({ config, payload }: { config: QRConfig; p
 
         <div className="mt-2.5 flex items-center gap-1.5 rounded-lg border border-line bg-elevated/60 px-2 py-1.5">
           <Zap size={11} className="shrink-0 text-accent-strong" />
-          <span className="font-mono text-[9.5px] uppercase tracking-wide text-muted">quality</span>
+          <span className="font-mono text-[9.5px] uppercase tracking-wide text-muted">{t('export.quality')}</span>
           <div className="ml-auto flex gap-1">
             {QUALITIES.map((q) => (
               <span
@@ -91,7 +93,7 @@ export default function DownloadPanel({ config, payload }: { config: QRConfig; p
 
         <p className="mt-2 flex items-center gap-1.5 text-[10.5px] text-muted">
           {ready ? <Check size={10} className="shrink-0 text-accent-strong" /> : <FileArchive size={10} className="shrink-0" />}
-          {ready ? 'ZIP bundles PNG, SVG, JPG, payload and config.' : 'Add content above to enable downloads.'}
+          {ready ? t('export.zipNote') : t('export.emptyNote')}
         </p>
       </div>
     </Panel>

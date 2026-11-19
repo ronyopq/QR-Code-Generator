@@ -5,6 +5,7 @@ import { STYLE_PRESETS, activePresetId, CLASSIC_PRESET, type StylePreset } from 
 import { defaultConfig, type QRConfig } from '../types'
 import { toStylingOptions } from '../lib/qr'
 import { useToast } from './Toast'
+import { useI18n, type TranslationKey } from '../lib/i18n'
 import { Panel } from './ui'
 
 /** Build the styling options a preset produces, without touching the user's content. */
@@ -56,6 +57,7 @@ function PresetChip({ preset, size = 96 }: { preset: StylePreset; size?: number 
 
 export default function StylePresets({ config, onChange }: { config: QRConfig; onChange: (p: Partial<QRConfig>) => void }) {
   const toast = useToast()
+  const { t } = useI18n()
   const active = activePresetId(config)
   const [mounted, setMounted] = useState(false)
 
@@ -65,30 +67,30 @@ export default function StylePresets({ config, onChange }: { config: QRConfig; o
     onChange(preset.style)
     toast.push({
       variant: 'success',
-      title: `${preset.name} applied`,
-      description: 'Your content stays the same — only the look changed.',
+      title: t('toast.preset.title', { name: t(`preset.${preset.id}.name` as TranslationKey) }),
+      description: t('toast.preset.desc'),
       duration: 2800,
     })
   }
 
   const reset = () => {
     onChange(CLASSIC_PRESET.style)
-    toast.push({ variant: 'info', title: 'Back to classic', description: 'Clean black on white, maximum compatibility.', duration: 2600 })
+    toast.push({ variant: 'info', title: t('toast.reset.title'), description: t('toast.reset.desc'), duration: 2600 })
   }
 
   return (
     <Panel
       head={{
-        label: 'Design presets',
+        label: t('panel.presets'),
         icon: Palette,
         right: (
           <button
             onClick={reset}
             disabled={active === 'classic'}
-            title={active === 'classic' ? 'Already classic' : 'Reset to the plain classic look'}
+            title={active === 'classic' ? t('panel.presets.alreadyClassic') : t('panel.presets.resetTitle')}
             className="flex items-center gap-1 rounded-md px-1.5 py-1 text-[10.5px] font-medium text-muted transition-colors hover:bg-inset hover:text-fg disabled:cursor-default disabled:opacity-40 disabled:hover:bg-transparent"
           >
-            <RotateCcw size={10} /> reset
+            <RotateCcw size={10} /> {t('panel.presets.reset')}
           </button>
         ),
       }}
@@ -96,9 +98,9 @@ export default function StylePresets({ config, onChange }: { config: QRConfig; o
       <div className="p-3">
         <p className="mb-2.5 flex items-start gap-1.5 text-[11px] leading-relaxed text-muted">
           <Sparkles size={12} className="mt-0.5 shrink-0 text-accent-strong" />
-          Start with Classic — it scans best. Each swatch is the real render, so what you pick is what you get.
+          {t('panel.presets.hint')}
           {active === null && (
-            <span className="ml-auto shrink-0 rounded bg-inset px-1.5 py-px text-[9px] font-semibold uppercase tracking-wide text-muted">custom</span>
+            <span className="ml-auto shrink-0 rounded bg-inset px-1.5 py-px text-[9px] font-semibold uppercase tracking-wide text-muted">{t('panel.presets.custom')}</span>
           )}
         </p>
 
@@ -110,7 +112,7 @@ export default function StylePresets({ config, onChange }: { config: QRConfig; o
                 key={preset.id}
                 onClick={() => apply(preset)}
                 aria-pressed={isActive}
-                title={`${preset.name} — ${preset.desc}`}
+                title={`${t(`preset.${preset.id}.name` as TranslationKey)} — ${t(`preset.${preset.id}.desc` as TranslationKey)}`}
                 className={`group relative flex items-center gap-2 rounded-lg border p-1.5 text-left transition-colors ${
                   isActive
                     ? 'border-accent/60 bg-accent/10'
@@ -120,12 +122,12 @@ export default function StylePresets({ config, onChange }: { config: QRConfig; o
                 {mounted ? <PresetChip preset={preset} /> : <span className="h-11 w-11 shrink-0 rounded-md bg-inset" aria-hidden="true" />}
                 <span className="min-w-0">
                   <span className="flex items-center gap-1">
-                    <span className="truncate text-[11.5px] font-semibold text-fg">{preset.name}</span>
+                    <span className="truncate text-[11.5px] font-semibold text-fg">{t(`preset.${preset.id}.name` as TranslationKey)}</span>
                     {preset.recommended && (
-                      <span className="rounded bg-accent/10 px-1 py-px text-[8px] font-bold uppercase tracking-wide text-accent-strong">best</span>
+                      <span className="rounded bg-accent/10 px-1 py-px text-[8px] font-bold uppercase tracking-wide text-accent-strong">{t('panel.presets.best')}</span>
                     )}
                   </span>
-                  <span className="mt-0.5 block truncate text-[9.5px] text-subtle">{preset.desc}</span>
+                  <span className="mt-0.5 block truncate text-[9.5px] text-subtle">{t(`preset.${preset.id}.desc` as TranslationKey)}</span>
                 </span>
                 {isActive && (
                   <span className="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-on-accent">

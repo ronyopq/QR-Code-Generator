@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -5,9 +6,13 @@ import react from '@vitejs/plugin-react'
 // under https://<user>.github.io/<repo>/ without server config.
 // PWA is handled via public/manifest.webmanifest + public/sw.js
 // (registered in src/main.tsx) to keep the build dependency-free.
+// Single source of truth for the version shown in the footer.
+const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string }
+
 export default defineConfig({
   define: {
     __BUILD_STAMP__: JSON.stringify(new Date().toISOString().slice(0, 16).replace('T', ' ')),
+    __APP_VERSION__: JSON.stringify(pkg.version),
   },
   base: './',
   plugins: [react()],

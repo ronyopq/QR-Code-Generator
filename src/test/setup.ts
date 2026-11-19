@@ -45,7 +45,7 @@ globalThis.ResizeObserver = RO as unknown as typeof globalThis.ResizeObserver
 globalThis.IntersectionObserver = RO as unknown as typeof globalThis.IntersectionObserver
 
 globalThis.HTMLElement.prototype.scrollIntoView = () => {}
-globalThis.requestAnimationFrame = ((cb: FrameRequestCallback) => setTimeout(() => cb(Date.now()), 0)) as typeof requestAnimationFrame
+globalThis.requestAnimationFrame = ((cb: FrameRequestCallback) => Number(setTimeout(() => cb(Date.now()), 0))) as typeof requestAnimationFrame
 globalThis.cancelAnimationFrame = ((id: number) => clearTimeout(id)) as typeof cancelAnimationFrame
 
 // React 18 tells you off without this flag when act() is used.

@@ -4,6 +4,7 @@ import { Expand, Hash, Maximize2, QrCode, RotateCcw, ScanLine, ZoomIn, ZoomOut }
 import type { QRConfig } from '../types'
 import { toStylingOptions } from '../lib/qr'
 import { cx } from './ui'
+import { useI18n } from '../lib/i18n'
 
 interface Props {
   config: QRConfig
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export default function QRPreview({ config, payload, onReady }: Props) {
+  const { t } = useI18n()
   const mountRef = useRef<HTMLDivElement>(null)
   const wrapRef = useRef<HTMLDivElement>(null)
   const qrRef = useRef<QRCodeStyling | null>(null)
@@ -62,16 +64,16 @@ export default function QRPreview({ config, payload, onReady }: Props) {
     <section ref={wrapRef} className="overflow-hidden rounded-2xl border border-line bg-surface">
       <header className="flex items-center gap-2 border-b border-line px-3 py-2.5">
         <ScanLine size={13} className="text-accent-strong" strokeWidth={1.75} />
-        <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-muted">Live preview</h2>
+        <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-muted">{t('preview.title')}</h2>
         <span className="ml-1 hidden items-center gap-1 rounded bg-inset px-1.5 py-0.5 font-mono text-[9.5px] uppercase tracking-wide text-muted sm:flex">
-          <span className="live-dot scale-75" /> live
+          <span className="live-dot scale-75" /> {t('preview.live')}
         </span>
         <div className="ml-auto flex items-center gap-0.5">
-          <button className={btn} onClick={() => setZoom((z) => Math.max(0.4, +(z - 0.1).toFixed(2)))} aria-label="Zoom out"><ZoomOut size={14} /></button>
+          <button className={btn} onClick={() => setZoom((z) => Math.max(0.4, +(z - 0.1).toFixed(2)))} aria-label={t('preview.zoomOut')}><ZoomOut size={14} /></button>
           <span className="w-10 text-center font-mono text-[10px] text-muted">{Math.round(zoom * 100)}%</span>
-          <button className={btn} onClick={() => setZoom((z) => Math.min(2.5, +(z + 0.1).toFixed(2)))} aria-label="Zoom in"><ZoomIn size={14} /></button>
-          <button className={btn} onClick={() => setZoom(1)} aria-label="Reset zoom"><RotateCcw size={13} /></button>
-          <button className={btn} onClick={toggleFs} aria-label="Fullscreen preview">{isFs ? <Maximize2 size={13} /> : <Expand size={13} />}</button>
+          <button className={btn} onClick={() => setZoom((z) => Math.min(2.5, +(z + 0.1).toFixed(2)))} aria-label={t('preview.zoomIn')}><ZoomIn size={14} /></button>
+          <button className={btn} onClick={() => setZoom(1)} aria-label={t('preview.resetZoom')}><RotateCcw size={13} /></button>
+          <button className={btn} onClick={toggleFs} aria-label={t('preview.fullscreen')}>{isFs ? <Maximize2 size={13} /> : <Expand size={13} />}</button>
         </div>
       </header>
 
@@ -80,20 +82,20 @@ export default function QRPreview({ config, payload, onReady }: Props) {
           ref={mountRef}
           className={cx('transition-transform duration-200 [&>canvas]:h-auto [&>canvas]:max-w-full [&>svg]:h-auto [&>svg]:max-w-full')}
           style={{ transform: `scale(${zoom})`, display: error || empty ? 'none' : undefined }}
-          aria-label="QR code preview"
+          aria-label={t('preview.title')}
         />
         {empty && (
           <div className="max-w-[15rem] text-center">
             <QrCode size={26} className="mx-auto text-subtle" strokeWidth={1.5} />
-            <p className="mt-2 text-[13px] font-semibold text-fg">Your code will appear here</p>
+            <p className="mt-2 text-[13px] font-semibold text-fg">{t('preview.emptyTitle')}</p>
             <p className="mt-1 text-[11.5px] leading-relaxed text-muted">
-              Add a link, WiFi details or text in step 02 — nothing else is required.
+              {t('preview.emptyBody')}
             </p>
           </div>
         )}
         {error && (
           <div className="max-w-xs text-center">
-            <p className="font-mono text-[11px] uppercase tracking-wide text-danger">Preview unavailable</p>
+            <p className="font-mono text-[11px] uppercase tracking-wide text-danger">{t('preview.unavailable')}</p>
             <p className="mt-1 font-sans text-xs text-muted">{error}</p>
           </div>
         )}
@@ -101,7 +103,7 @@ export default function QRPreview({ config, payload, onReady }: Props) {
 
       <div className="flex items-center gap-2 border-t border-line px-3 py-2.5">
         <Hash size={12} className="shrink-0 text-muted" strokeWidth={1.75} />
-        <p className="truncate font-mono text-[10.5px] text-muted" title={payload}>{payload || '— enter content to generate —'}</p>
+        <p className="truncate font-mono text-[10.5px] text-muted" title={payload}>{payload || t('preview.placeholder')}</p>
         <span className="ml-auto shrink-0 rounded bg-inset px-1.5 py-0.5 font-mono text-[9.5px] uppercase text-muted">
           EC {config.errorCorrection}
         </span>

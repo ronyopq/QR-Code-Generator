@@ -106,6 +106,31 @@ describe('App', () => {
     await app.unmount()
   }, 20000)
 
+  it('switches the whole interface to Bengali, remembers it, and switches back', async () => {
+    localStorage.removeItem('qrforge-lang')
+    const app = await mount()
+    const langButton = () => app.$$('button[aria-label]').find((b) => /switch language|ভাষা বদলান/i.test(b.getAttribute('aria-label') || ''))!
+
+    expect(app.text()).toContain('Live preview')
+    await click(langButton())
+
+    expect(app.text()).toContain('লাইভ প্রিভিউ')
+    expect(app.text()).toContain('স্ক্যান যাচাই')
+    expect(app.text()).toContain('ডিজাইন প্রিসেট')
+    expect(app.text()).toContain('ক্লাসিক')
+    expect(app.text()).toContain('ছাপার জন্য প্রস্তুত')
+    expect(document.documentElement.lang).toBe('bn')
+    expect(localStorage.getItem('qrforge-lang')).toBe('bn')
+
+    // the toggle label flips too, and en restores the English chrome
+    await click(langButton())
+    expect(app.text()).toContain('Live preview')
+    expect(document.documentElement.lang).toBe('en')
+    expect(localStorage.getItem('qrforge-lang')).toBe('en')
+
+    await app.unmount()
+  }, 20000)
+
   // Exporting is not asserted here on purpose: jsdom has no canvas rasteriser, so
   // qr-code-styling's getRawData() never settles. The lazy gateway is unit-tested in
   // src/lib/download.test.ts and real file bytes are covered by the browser e2e job.

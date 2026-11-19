@@ -21,6 +21,9 @@ no backend, no sign-up, no watermarks. Deploys free on **GitHub Pages**.
 
 Both sites build from the same commit with `npm run build` (Vite, `dist/`).
 
+The version in the footer comes from `package.json` (`__APP_VERSION__`, injected by `vite.config.ts`),
+so the number you see in the app is the number in [CHANGELOG.md](./CHANGELOG.md).
+
 
 ## 🗺️ Roadmap
 
@@ -95,6 +98,13 @@ completed, and a one-click PNG button next to the preview.
 - Real-time generation, zoom (40–250%), fullscreen preview, encoded-payload inspector
 - **PNG, JPG, SVG, WEBP, PDF (A4), EPS, A4 print sheet, ZIP package** (PNG+SVG+JPG+payload+config.json)
 - Powered by `qr-code-styling`, `jsPDF`, `JSZip`, `FileSaver.js` — loaded only when you export
+
+### Two languages (English / বাংলা)
+A tiny i18n layer (`src/lib/i18n.tsx`, no dependency) keeps a flat dictionary with `{placeholder}`
+support and an English fallback, so a missing translation can never blank the interface. The
+language switch sits in the top bar (icon only on phones), follows the browser language on first
+visit, is remembered per device, updates `<html lang>` for screen readers and SEO, and the tests
+enforce that every Bengali key exists and no string is silently left untranslated.
 
 ### Scan check — "will this actually scan?"
 The panel under the preview audits the current design before you print:
