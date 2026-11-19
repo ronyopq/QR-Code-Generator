@@ -3,12 +3,15 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Enterprise Multi-Function QR Code Generator — deployable on GitHub Pages",
+  "description": "Enterprise Multi-Function QR Code Generator \u2014 deployable on GitHub Pages",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@fontsource-variable/ibm-plex-sans": "^5.3.0",
@@ -19,7 +22,6 @@
     "colord": "^2.14.0",
     "file-saver": "^2.0.5",
     "framer-motion": "^14.14.0",
-    "html2canvas": "^1.4.1",
     "jspdf": "^2.5.2",
     "jszip": "^3.10.1",
     "lucide-react": "^0.469.0",
@@ -34,9 +36,11 @@
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
+    "jsdom": "^25.0.1",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.2",
-    "vite": "^6.0.5"
+    "vite": "^6.0.5",
+    "vitest": "^2.1.9"
   }
 }

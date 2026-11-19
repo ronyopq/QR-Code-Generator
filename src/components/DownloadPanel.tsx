@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Check, Download, FileArchive, Loader2, Package, Zap } from 'lucide-react'
 import type { QRConfig } from '../types'
-import { downloadQR } from '../lib/exporter'
+import { downloadQR } from '../lib/download'
 import { useToast } from './Toast'
 import { Panel } from './ui'
 

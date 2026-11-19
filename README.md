@@ -129,13 +129,26 @@ Local scan counter, device breakdown, date filters (7d/30d/all), per-QR scan ran
 ## 🚀 Quick start
 
 ```bash
-npm install
+npm ci             # install exactly what the lockfile pins
 npm run dev        # http://localhost:5173
-npm run build      # production build → dist/
+npm run build      # typecheck + production build → dist/
 npm run preview    # preview the production build
+npm test           # unit + DOM tests (Vitest, 37 specs)
+npm run typecheck  # types only
 ```
 
-Requires Node 18+ (tested on Node 22).
+Requires Node 18+ (tested on Node 22). Every push to a branch runs
+`.github/workflows/ci.yml` — typecheck, tests, build — and the deploy workflow only
+publishes from `main`.
+
+### What the tests cover
+
+`src/lib/qr.test.ts` builds the payload for **every QR type**, checks the CSV parser and the
+full `toStylingOptions` mapping, and pins the **preview/export parity** rule: all 100 ordered
+preset switches must resolve to the same options object as a fresh render.
+`src/data/stylePresets.test.ts` pins what counts as a deviation from a preset.
+`src/components/App.test.tsx` renders the real app in JSDOM and clicks through the presets.
+See **[CONTRIBUTING.md](./CONTRIBUTING.md)** for the rules of the build.
 
 ---
 
@@ -316,7 +329,8 @@ Everything runs in the browser. History, scans, and settings live in `localStora
 
 ## 📄 License
 
-MIT — free for personal and commercial use.
+MIT — free for personal and commercial use. See [LICENSE](./LICENSE).
+Security reports: [SECURITY.md](./SECURITY.md).
 
 ### Troubleshooting styles
 The stylesheet is linked from `index.html` (`<link rel="stylesheet" href="./src/index.css">`)

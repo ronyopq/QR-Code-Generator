@@ -19,7 +19,6 @@ export default defineConfig({
       output: {
         manualChunks: {
           qr: ['qr-code-styling'],
-          exporters: ['jspdf', 'jszip', 'file-saver', 'html2canvas'],
           motion: ['framer-motion', 'cmdk', 'colord'],
         },
       },

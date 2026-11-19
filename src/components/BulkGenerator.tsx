@@ -1,6 +1,4 @@
 import { useRef, useState } from 'react'
-import { saveAs } from 'file-saver'
-import JSZip from 'jszip'
 import { ArrowRight, Check, FileSpreadsheet, Loader2, Upload } from 'lucide-react'
 import type { QRConfig } from '../types'
 import { buildPayload, parseCSV, qrBlob, slug } from '../lib/qr'
@@ -42,6 +40,9 @@ export default function BulkGenerator({ template }: Props) {
     if (!rows.length) return
     setBusy(true)
     setProgress(0)
+    // JSZip + FileSaver are ~100 kB gzip: load them when a batch is actually built,
+    // not with the first paint of the app.
+    const [{ default: JSZip }, { saveAs }] = await Promise.all([import('jszip'), import('file-saver')])
     const zip = new JSZip()
     const folder = zip.folder('qr-codes')!
     let made = 0
