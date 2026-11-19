@@ -12,6 +12,7 @@ const FORMATS = [
   { id: 'webp', label: 'WEBP', note: 'modern web' },
   { id: 'pdf', label: 'PDF', note: 'A4 doc' },
   { id: 'eps', label: 'EPS', note: 'press' },
+  { id: 'sheet', label: 'A4 SHEET', note: '6 per page' },
   { id: 'zip', label: 'ZIP', note: 'full kit' },
 ]
 

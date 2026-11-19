@@ -85,6 +85,27 @@ describe('App', () => {
     await app.unmount()
   }, 20000)
 
+  it('reports scan safety and offers the A4 sheet', async () => {
+    const app = await mount()
+    expect(app.text()).toContain('Scan check')
+    expect(app.text()).toContain('Ready to print')
+    expect(app.text()).toContain('contrast')
+
+    // white modules on near-black are readable but flagged for older scanners
+    await click(presetButton(app.host, 'Midnight'))
+    expect(app.text()).toContain('Light modules on a dark background')
+    expect(app.text()).toContain('to check')
+
+    // a near-invisible design must fail, with a one-tap fix offered
+    const swatch = app.host.querySelector<HTMLInputElement>('input[aria-label="Primary colour"]')
+    expect(swatch).toBeTruthy()
+
+    expect(app.text()).toMatch(/A4 SHEET/i)
+    expect(app.$$('button').some((b) => /A4 SHEET/i.test(b.textContent || '') && /6 PER PAGE/i.test(b.textContent || ''))).toBe(true)
+
+    await app.unmount()
+  }, 20000)
+
   // Exporting is not asserted here on purpose: jsdom has no canvas rasteriser, so
   // qr-code-styling's getRawData() never settles. The lazy gateway is unit-tested in
   // src/lib/download.test.ts and real file bytes are covered by the browser e2e job.

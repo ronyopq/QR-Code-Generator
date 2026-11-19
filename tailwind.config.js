@@ -31,6 +31,7 @@ export default {
         'on-accent': 'rgb(var(--c-on-accent) / <alpha-value>)',
         danger: 'rgb(var(--c-danger) / <alpha-value>)',
         warn: 'rgb(var(--c-warn) / <alpha-value>)',
+        ok: 'rgb(var(--c-ok) / <alpha-value>)',
       },
       borderRadius: { xl: '0.75rem', '2xl': '1rem', '3xl': '1.25rem' },
       boxShadow: {

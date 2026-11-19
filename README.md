@@ -93,8 +93,26 @@ completed, and a one-click PNG button next to the preview.
 
 ### Live preview & export
 - Real-time generation, zoom (40–250%), fullscreen preview, encoded-payload inspector
-- **PNG, JPG, SVG, WEBP, PDF (A4), EPS, ZIP package** (PNG+SVG+JPG+payload+config.json)
-- Powered by `qr-code-styling`, `jsPDF`, `JSZip`, `FileSaver.js`, `html2canvas`
+- **PNG, JPG, SVG, WEBP, PDF (A4), EPS, A4 print sheet, ZIP package** (PNG+SVG+JPG+payload+config.json)
+- Powered by `qr-code-styling`, `jsPDF`, `JSZip`, `FileSaver.js` — loaded only when you export
+
+### Scan check — "will this actually scan?"
+The panel under the preview audits the current design before you print:
+- **contrast ratio** (WCAG maths) between the real module colour and the real background —
+  gradients are averaged, transparent backgrounds are measured against white
+- **symbol size**: QR version and module count calculated from the payload bytes and the
+  error-correction level, then converted into millimetres for a chosen print width
+  (20/30/40/60/100 mm or any value)
+- **quiet zone** measured in modules against the true module size
+- logo vs. error-correction warnings, inverted (light-on-dark) warnings, cramped-render warnings
+- every issue carries a **one-tap fix** (`use error correction H`, `set margin to 4 modules`, …)
+- **Test this code**: renders the QR and decodes it with the browser's `BarcodeDetector`,
+  confirming the bytes come back identical (Chrome, Edge, Android; the button hides itself
+  where the API is unavailable and the static checks still apply)
+
+### A4 print sheet
+`Export → A4 SHEET` produces a print-ready PDF: **six copies per page**, dashed cut guides,
+labelled cells, correct millimetre sizing, and transparent designs flattened onto white.
 
 ### Bulk generator
 CSV upload → batch generation with progress bar → single ZIP download.

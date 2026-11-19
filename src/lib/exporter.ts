@@ -21,6 +21,34 @@ function makeEPS(jpeg: Blob, w: number, h: number): Blob {
   return new Blob([header, body, jpeg, footer], { type: 'application/postscript' })
 }
 
+/** A4 portrait grid: 2 columns × 3 rows of the same code, in millimetres. */
+export interface SheetCell {
+  x: number; y: number; cellW: number; cellH: number
+  qrX: number; qrY: number; size: number; labelX: number; labelY: number
+}
+
+export function sheetLayout(copies = 6, pageW = 210, pageH = 297) {
+  const cols = 2
+  const rows = 3
+  const marginX = 12
+  const marginY = 20
+  const gap = 6
+  const cellW = (pageW - marginX * 2) / cols
+  const cellH = (pageH - marginY * 2) / rows
+  const cells: SheetCell[] = []
+  for (let i = 0; i < Math.min(copies, cols * rows); i++) {
+    const col = i % cols
+    const row = Math.floor(i / cols)
+    const x = marginX + col * cellW
+    const y = marginY + row * cellH
+    const size = Math.min(cellW, cellH) - gap * 4
+    const qrX = x + (cellW - size) / 2
+    const qrY = y + gap
+    cells.push({ x, y, cellW, cellH, qrX, qrY, size, labelX: x + cellW / 2, labelY: qrY + size + 6 })
+  }
+  return { cols, rows, cells }
+}
+
 export async function downloadQR(cfg: QRConfig, payload: string, format: string) {
   const name = slug(cfg.name || 'qr-code')
   const c = scaled(cfg)
@@ -64,6 +92,39 @@ export async function downloadQR(cfg: QRConfig, payload: string, format: string)
   if (format === 'eps') {
     const jpeg = await qrBlob(c, payload, 'jpeg')
     saveAs(makeEPS(jpeg, c.width, c.height), `${name}.eps`)
+    return
+  }
+  if (format === 'sheet') {
+    // Print sheet: the same code repeated on an A4 page with cut guides and captions.
+    // Transparent designs are flattened onto white — printers have no alpha channel.
+    const printable: QRConfig = c.bgMode === 'transparent' ? { ...c, bgMode: 'solid', bgColor: '#ffffff' } : c
+    const png = await qrBlob(printable, payload, 'png')
+    const dataUrl = await blobToDataURL(png)
+    const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' })
+    const { cells } = sheetLayout(6)
+
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(9)
+    doc.setTextColor(110)
+    doc.text(cfg.name || 'QRForge', 12, 12)
+    doc.setFontSize(7)
+    doc.text('Cut along the dashed guides · 6 codes per page · generated offline by QRForge', 12, 16)
+
+    cells.forEach((cell) => {
+      doc.setDrawColor(205)
+      doc.setLineDashPattern([1.6, 1.6], 0)
+      doc.rect(cell.x, cell.y, cell.cellW, cell.cellH)
+      doc.setLineDashPattern([], 0)
+      doc.addImage(dataUrl, 'PNG', cell.qrX, cell.qrY, cell.size, cell.size)
+      doc.setFontSize(7.5)
+      doc.setTextColor(40)
+      doc.text(cfg.name || 'Scan me', cell.labelX, cell.labelY, { align: 'center', maxWidth: cell.cellW - 10 })
+      doc.setFontSize(6)
+      doc.setTextColor(130)
+      doc.text('scan me', cell.labelX, cell.labelY + 3.6, { align: 'center' })
+    })
+
+    doc.save(`${name}-sheet.pdf`)
     return
   }
   if (format === 'zip') {
