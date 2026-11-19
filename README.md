@@ -26,6 +26,21 @@ URL · Text · Email · Phone · SMS · WhatsApp · WiFi · vCard · Location ·
 Social Hub · Facebook · Instagram · YouTube · Telegram · LinkedIn · PDF Link · App Download ·
 Restaurant Menu · **Dynamic QR (ready)** — each with a smart, type-specific form and sample data.
 
+### Developer showcase
+The footer, the desktop icon rail and the mobile drawer carry a **Crafted by Rony Siddiqi**
+badge. It opens a profile sheet (bottom sheet on phones, centred modal on desktop) with the
+verified role, a short bio, focus areas, skill tags, and cards for Facebook, WhatsApp, Telegram,
+LinkedIn, X, Blogger and WordPress — each with its brand mark, a direct link and a one-click
+**copy** button. The WhatsApp card hands over a support message with your **browser, OS, device
+type, screen size, language, timezone and current page** pre-filled, and the built-in **vCard QR**
+saves the contact to a phone camera. The sheet is reachable from `⌘K → Developer profile` and from
+Credits → *Meet the developer*. All links live in `src/data/developer.ts`.
+
+### Tall content stays usable
+Modals are capped at `calc(100dvh - padding)` with a sticky header/footer and a scrollable body,
+so the credits list no longer runs off screen — on a 320 px tall viewport it scrolls instead of
+clipping.
+
 ### Start simple, style later
 The first code is always **plain black on white** — square modules, safe error correction, generous
 quiet zone. Nothing is styled until the user asks for it, so the very first download is guaranteed

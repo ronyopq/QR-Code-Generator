@@ -27,7 +27,7 @@ export default function OnlineNow({ compact = false }: { compact?: boolean }) {
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-label={`${online} people online now — view details`}
-        className="flex items-center gap-2 rounded-lg border border-line bg-elevated px-2 py-1.5 transition-colors hover:border-line-strong :border-line-strong"
+        className="flex items-center gap-2 rounded-lg border border-line bg-elevated px-2 py-1.5 transition-colors hover:border-line-strong "
       >
         <span className="live-dot" />
         <span className="font-mono text-[11px] font-semibold tabular-nums text-fg">{formatCount(online)}</span>

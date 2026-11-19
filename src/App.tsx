@@ -26,6 +26,8 @@ import OnlineNow from './components/OnlineNow'
 import BookmarkPrompt from './components/BookmarkPrompt'
 import CommandPalette from './components/CommandPalette'
 import CreditsModal from './components/CreditsModal'
+import DeveloperBadge from './components/DeveloperBadge'
+import DeveloperModal from './components/DeveloperModal'
 import ModuleGlyph from './components/ModuleGlyph'
 import { ToastProvider, useToast } from './components/Toast'
 import { SectionHead, Stat } from './components/ui'
@@ -62,6 +64,7 @@ function Shell() {
   const [drawer, setDrawer] = useState(false)
   const [palette, setPalette] = useState(false)
   const [credits, setCredits] = useState(false)
+  const [developer, setDeveloper] = useState(false)
   const [history, setHistory] = useState<HistoryItem[]>(() => loadHistory())
   const [installEvt, setInstallEvt] = useState<Event | null>(null)
 
@@ -174,7 +177,7 @@ function Shell() {
       className={`group relative flex w-full flex-col items-center gap-1 rounded-lg py-2.5 transition-colors ${
         view === n.id
           ? 'bg-inset text-accent-strong  '
-          : 'text-muted hover:bg-inset/60 hover:text-fg  :bg-inset :text-fg'
+          : 'text-muted hover:bg-inset/60 hover:text-fg   '
       }`}
     >
       {view === n.id && <span className="absolute inset-y-2 left-0 w-0.5 rounded-r bg-accent" />}
@@ -196,10 +199,11 @@ function Shell() {
           </nav>
           <div className="mt-auto flex flex-col items-center gap-1">
             <div className="mb-1 h-px w-8 bg-line" />
-            <button onClick={() => setCredits(true)} aria-label="Credits and licences" className="flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-inset hover:text-fg :bg-inset">
+            <DeveloperBadge variant="rail" onClick={() => setDeveloper(true)} />
+            <button onClick={() => setCredits(true)} aria-label="Credits and licences" className="flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-inset hover:text-fg ">
               <Sparkles size={14} />
             </button>
-            <button onClick={() => setDark(!dark)} aria-label="Toggle colour scheme" className="flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-inset hover:text-fg :bg-inset">
+            <button onClick={() => setDark(!dark)} aria-label="Toggle colour scheme" className="flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-inset hover:text-fg ">
               {dark ? <Sun size={14} /> : <Moon size={14} />}
             </button>
           </div>
@@ -219,7 +223,7 @@ function Shell() {
               <div className="ml-auto flex items-center gap-1.5">
                 <button
                   onClick={() => setPalette(true)}
-                  className="hidden items-center gap-2 rounded-lg border border-line bg-elevated px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted transition-colors hover:border-line-strong hover:text-fg sm:flex :text-fg"
+                  className="hidden items-center gap-2 rounded-lg border border-line bg-elevated px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted transition-colors hover:border-line-strong hover:text-fg sm:flex "
                 >
                   <span>⌘K</span>
                   <span className="text-subtle">commands</span>
@@ -235,7 +239,7 @@ function Shell() {
           {drawer && (
             <div className="fixed inset-0 z-50 lg:hidden">
               <div className="absolute inset-0 animate-fade-in bg-canvas/70 backdrop-blur-sm" onClick={() => setDrawer(false)} />
-              <nav className="absolute left-0 top-0 h-full w-64 animate-slide-in border-r border-line bg-surface p-3">
+              <nav className="absolute left-0 top-0 flex h-full w-64 animate-slide-in flex-col border-r border-line bg-surface p-3">
                 <div className="mb-3 flex items-center gap-2 px-1">
                   <span className="flex h-7 w-7 items-center justify-center rounded-md bg-accent text-on-accent"><QrCode size={14} /></span>
                   <span className="font-sans text-[12px] font-semibold">QRForge</span>
@@ -250,6 +254,9 @@ function Shell() {
                     <n.icon size={15} /> {n.label}
                   </button>
                 ))}
+                <div className="mt-auto border-t border-line pt-3">
+                  <DeveloperBadge onClick={() => { setDrawer(false); setDeveloper(true) }} />
+                </div>
               </nav>
             </div>
           )}
@@ -335,7 +342,7 @@ function Shell() {
                             className={`group relative flex items-center gap-2 rounded-lg border px-2.5 py-2 text-left transition-colors ${
                               active
                                 ? 'border-accent/50 bg-accent/10'
-                                : 'border-line bg-surface hover:border-line-strong hover:bg-elevated   :border-line-strong'
+                                : 'border-line bg-surface hover:border-line-strong hover:bg-elevated   '
                             } `}
                           >
                             <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md ${active ? 'bg-accent text-on-accent' : 'bg-inset text-muted group-hover:text-fg  '}`}>
@@ -401,7 +408,7 @@ function Shell() {
                       { icon: Zap, title: 'Press-ready output', body: 'PNG up to 5000px, true vector SVG, EPS for print shops and a ZIP with the payload + config.' },
                       { icon: Smartphone, title: 'Installable & offline', body: 'Install as an app, and every screen keeps working without a connection thanks to the service worker.' },
                     ].map((c) => (
-                      <article key={c.title} className="group relative overflow-hidden rounded-xl border border-line bg-surface p-4 transition-colors hover:border-line-strong :border-line-strong">
+                      <article key={c.title} className="group relative overflow-hidden rounded-xl border border-line bg-surface p-4 transition-colors hover:border-line-strong ">
                         <div className="pointer-events-none absolute inset-0 module-grid opacity-[0.35]" aria-hidden />
                         <div className="relative">
                           <c.icon size={15} className="text-accent-strong" strokeWidth={1.75} />
@@ -470,22 +477,25 @@ function Shell() {
                         <button
                           key={n}
                           onClick={() => setCredits(true)}
-                          className="rounded border border-line px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wide text-muted transition-colors hover:border-accent/40 hover:text-accent-strong :text-accent-strong"
+                          className="rounded border border-line px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wide text-muted transition-colors hover:border-accent/40 hover:text-accent-strong "
                         >
                           {n}
                         </button>
                       ))}
                     </div>
+                    <DeveloperBadge onClick={() => setDeveloper(true)} className="sm:self-end" />
                     <div className="flex items-center gap-3 font-mono text-[9.5px] uppercase tracking-[0.1em] text-subtle">
-                      <button onClick={() => window.dispatchEvent(new CustomEvent('qrforge:bookmark'))} className="inline-flex items-center gap-1 hover:text-fg :text-fg">
+                      <button onClick={() => window.dispatchEvent(new CustomEvent('qrforge:bookmark'))} className="inline-flex items-center gap-1 hover:text-fg ">
                         <Bookmark size={10} /> bookmark
                       </button>
                       <span className="h-2.5 w-px bg-line" />
-                      <button onClick={() => setCredits(true)} className="inline-flex items-center gap-1 hover:text-fg :text-fg">
+                      <button onClick={() => setCredits(true)} className="inline-flex items-center gap-1 hover:text-fg ">
                         <Sparkles size={10} /> credits
                       </button>
                       <span className="h-2.5 w-px bg-line" />
-                      <a href="https://github.com" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-fg :text-fg">
+                      <DeveloperBadge variant="meta" onClick={() => setDeveloper(true)} />
+                      <span className="h-2.5 w-px bg-line" />
+                      <a href="https://github.com" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-fg ">
                         <Github size={10} /> source
                       </a>
                     </div>
@@ -513,9 +523,11 @@ function Shell() {
         onInstall={install}
         onBookmark={() => window.dispatchEvent(new CustomEvent('qrforge:bookmark'))}
         onCredits={() => setCredits(true)}
+        onDeveloper={() => setDeveloper(true)}
         dark={dark}
       />
-      <CreditsModal open={credits} onClose={() => setCredits(false)} />
+      <CreditsModal open={credits} onClose={() => setCredits(false)} onDeveloper={() => { setCredits(false); setDeveloper(true) }} />
+      <DeveloperModal open={developer} onClose={() => setDeveloper(false)} />
       <BookmarkPrompt onInstall={install} />
 
       <button

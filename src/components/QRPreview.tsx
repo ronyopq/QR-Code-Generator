@@ -56,7 +56,7 @@ export default function QRPreview({ config, payload, onReady }: Props) {
     else await wrapRef.current?.requestFullscreen?.()
   }
 
-  const btn = 'flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-inset hover:text-fg  :bg-inset'
+  const btn = 'flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-inset hover:text-fg  '
 
   return (
     <section ref={wrapRef} className="overflow-hidden rounded-2xl border border-line bg-surface">

@@ -59,7 +59,7 @@ export default function DownloadPanel({ config, payload }: { config: QRConfig; p
               onClick={() => run(f.id)}
               disabled={!!busy || !ready}
               title={ready ? `${f.label} export` : 'Add content first'}
-              className={`group relative flex flex-col items-center gap-0.5 rounded-lg border border-line bg-elevated px-1 py-2.5 transition-colors hover:border-accent/50 hover:bg-inset disabled:opacity-40   :border-accent/40 :bg-elevated ${f.id === 'zip' ? 'col-span-2 flex-row justify-center gap-2' : ''}`}
+              className={`group relative flex flex-col items-center gap-0.5 rounded-lg border border-line bg-elevated px-1 py-2.5 transition-colors hover:border-accent/50 hover:bg-inset disabled:opacity-40     ${f.id === 'zip' ? 'col-span-2 flex-row justify-center gap-2' : ''}`}
             >
               {busy === f.id ? <Loader2 size={13} className="animate-spin text-accent-strong" /> : f.id === 'zip' ? <Package size={13} className="text-muted" /> : null}
               <span className="font-mono text-[10.5px] font-semibold uppercase tracking-wide text-fg">{f.label}</span>

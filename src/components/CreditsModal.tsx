@@ -1,5 +1,6 @@
-import { ExternalLink, Heart, Sparkles } from 'lucide-react'
+import { BadgeCheck, ExternalLink, Heart, Sparkles } from 'lucide-react'
 import Modal from './Modal'
+import { DEVELOPER } from '../data/developer'
 
 interface Credit {
   name: string
@@ -50,7 +51,7 @@ const GROUPS: { title: string; items: Credit[] }[] = [
   },
 ]
 
-export default function CreditsModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export default function CreditsModal({ open, onClose, onDeveloper }: { open: boolean; onClose: () => void; onDeveloper?: () => void }) {
   return (
     <Modal
       open={open}
@@ -59,7 +60,16 @@ export default function CreditsModal({ open, onClose }: { open: boolean; onClose
       title="Credits & open source"
       description="QRForge is built on excellent free software. Each project keeps its own licence; links open the source."
       icon={<Sparkles size={18} />}
-      footer={<button className="btn-secondary" onClick={onClose}>Close</button>}
+      footer={
+        <>
+          {onDeveloper && (
+            <button className="btn-secondary" onClick={onDeveloper}>
+              <BadgeCheck size={13} /> Meet the developer
+            </button>
+          )}
+          <button className="btn-secondary" onClick={onClose}>Close</button>
+        </>
+      }
     >
       <div className="flex flex-col gap-4">
         {GROUPS.map((g) => (
@@ -72,7 +82,7 @@ export default function CreditsModal({ open, onClose }: { open: boolean; onClose
                   href={c.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-start gap-3 px-3 py-2 transition-colors hover:bg-elevated :bg-elevated"
+                  className="flex items-start gap-3 px-3 py-2 transition-colors hover:bg-elevated "
                 >
                   <div className="min-w-0 flex-1">
                     <p className="font-mono text-[11.5px] font-semibold uppercase tracking-wide text-fg">{c.name}</p>
@@ -85,8 +95,27 @@ export default function CreditsModal({ open, onClose }: { open: boolean; onClose
             </div>
           </div>
         ))}
+        <div className="rounded-lg border border-line bg-elevated p-3">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-line bg-surface font-mono text-[11px] font-bold text-accent-strong" aria-hidden="true">
+              {DEVELOPER.initials}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="flex items-center gap-1 text-[12px] font-semibold text-fg">
+                {DEVELOPER.name}
+                <BadgeCheck size={12} className="text-accent-strong" aria-hidden="true" />
+              </p>
+              <p className="text-[10.5px] text-muted">{DEVELOPER.role} · crafted every screen here</p>
+            </div>
+            {onDeveloper && (
+              <button className="btn-secondary !px-2.5 !py-1.5 !text-[11px]" onClick={onDeveloper}>
+                Profile
+              </button>
+            )}
+          </div>
+        </div>
         <p className="flex items-center justify-center gap-1.5 font-sans text-[11px] text-muted">
-          Made with <Heart size={11} className="text-danger" fill="currentColor" /> and no backend.
+          Made with <Heart size={11} className="text-danger" fill="currentColor" aria-hidden="true" /> and no backend.
         </p>
       </div>
     </Modal>
