@@ -29,9 +29,8 @@ so the number you see in the app is the number in [CHANGELOG.md](./CHANGELOG.md)
 
 ## 🗺️ Roadmap
 
-What is worth building next — reliability gaps, scan-safety checks, Supabase-powered dynamic QR,
-Bengali localisation, tests and CI — is listed with evidence, effort and a sprint plan in
-**[ROADMAP.md](./ROADMAP.md)**.
+What is worth building next — reliability gaps, scan-safety checks, PWA polish, tests and CI — is
+listed with evidence, effort and a sprint plan in **[ROADMAP.md](./ROADMAP.md)**.
 
 ## ✨ Features
 
@@ -381,6 +380,16 @@ Dismissals are remembered for 4 days so the prompt stays polite.
 
 Everything runs in the browser. History, scans, and settings live in `localStorage`
 (`qrforge-history-v1`, `qrforge-scans-v1`). Nothing is uploaded anywhere.
+
+### Why there is no dynamic QR (and no scan analytics)
+
+A static QR code cannot report that it was scanned — the data is inside the pattern and no server
+is involved. Getting scan counts means putting a short link and a redirect service between the
+print and the destination: a backend, an account, a bill, and a code that stops working when the
+service does. That is not this product. QRForge stays static so a printed code works as long as the
+paper and the destination page do. If you need editable destinations or scan counts, the honest
+route is a short path on a domain you own plus a 301 — see
+[/static-vs-dynamic-qr-code](https://qrforge-bd.vercel.app/static-vs-dynamic-qr-code).
 
 ## 📄 License
 
