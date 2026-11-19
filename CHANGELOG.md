@@ -4,6 +4,27 @@ All notable changes to QRForge are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] — 2026-11-19
+
+### Added
+- **Fifteen more landing pages** — the site now covers every type it offers:
+  `/email-`, `/phone-`, `/sms-`, `/text-`, `/location-`, `/event-`, `/pdf-`,
+  `/app-download-`, `/instagram-`, `/facebook-`, `/youtube-`, `/telegram-`, `/linkedin-`,
+  `/social-qr-code` plus `/static-vs-dynamic-qr-code`. Still static HTML + CSS only, still one URL
+  per intent, still 350–700 words written for that specific question.
+- `/static-vs-dynamic-qr-code` replaces the tempting `/dynamic-qr-code`: QRForge only makes static
+  codes, so a "dynamic generator" page would promise something the product does not do. The honest
+  comparison ranks for the same query and explains the middle path (own the short link).
+- `scripts/og-image.mjs` now reads the route table through esbuild and generates **one card per
+  page** (21 files), with auto-fitting titles, subtitles, fact lines and URLs — so a new page gets
+  a correct card for free. Long titles fall back to two balanced lines; nothing can slide under
+  the QR panel.
+
+### Changed
+- The in-app "Guides by type" row lists all 20 pages (`src/marketing/guides.ts`), and the crawlable
+  shell's guide grid grew from 5 to 20 entries. A test keeps both in sync with `routes.ts`.
+- 21 URLs in `sitemap.xml`, 21 entries in `llms.txt`.
+
 ## [1.6.0] — 2026-11-19
 
 ### Added

@@ -17,12 +17,31 @@ import { execFileSync } from 'node:child_process'
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { createRequire } from 'node:module'
+import { build as esbuild } from 'esbuild'
 
 const require = createRequire(import.meta.url)
 const qrcode = require('qrcode-generator')
 
 const SITE = 'https://qrforge-bd.vercel.app'
+const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)))
+
+/** The route table is the source of truth, so a new page gets a card for free. */
+async function loadRoutes() {
+  const out = path.join(root, 'node_modules', '.cache', 'qrforge-og-routes.mjs')
+  await esbuild({
+    entryPoints: [path.join(root, 'src/marketing/routes.ts')],
+    outfile: out,
+    bundle: true,
+    platform: 'node',
+    format: 'esm',
+    target: 'node20',
+    packages: 'external',
+    logLevel: 'error',
+  })
+  return import(`${pathToFileURL(out).href}?v=${Date.now()}`)
+}
 const W = 1200
 const H = 630
 const INK = '#111418'
@@ -31,57 +50,53 @@ const BODY = '#3c444d'
 const ACCENT = '#4338ca'
 const PAPER = '#f7f7f4'
 
-/** One card per page. `size` is the wordmark size — tuned so nothing overflows. */
+const HOME_CARD = {
+  out: 'public/og.png',
+  url: `${SITE}/`,
+  title: 'QRForge',
+  titleSize: 124,
+  subtitle: 'Free QR code generator',
+  facts: '20 QR types  ·  8 export formats  ·  logos & presets',
+  urlText: 'qrforge-bd.vercel.app',
+}
+
+/** Hand-tuned subtitles for the pages that deserve better than an auto excerpt. */
+const OVERRIDES = {
+  '/wifi-qr-code': { subtitle: 'Guests join in one scan', facts: 'SSID  ·  password  ·  print size check' },
+  '/vcard-qr-code': { title: 'vCard QR code', subtitle: 'The card that saves itself', facts: 'name  ·  phone  ·  email  ·  company' },
+  '/menu-qr-code': { subtitle: 'For restaurants and cafés', facts: 'no subscription  ·  never expires' },
+  '/whatsapp-qr-code': { subtitle: 'Opens a chat instantly', facts: 'prefilled message  ·  phone + desktop' },
+  '/url-qr-code': { subtitle: 'Print-ready links', facts: 'PNG  ·  SVG  ·  PDF  ·  A4 sheet' },
+}
+
+/** Short, clean subtitle: first clause of the lede, clipped on a word boundary. */
+function firstSentence(text) {
+  const m = /^(.+?[.!?])(\s|$)/.exec(text)
+  let sentence = (m ? m[1] : text).replace(/\s+/g, ' ').trim()
+  if (sentence.length > 52) {
+    sentence = sentence.slice(0, 52)
+    sentence = sentence.slice(0, sentence.lastIndexOf(' ')).replace(/[\s—–,;:.-]+$/, '')
+    return `${sentence}…`
+  }
+  return sentence.replace(/[.]+$/, '')
+}
+
+const module = await loadRoutes()
+const ROUTES = module.LANDING_ROUTES
+
 const CARDS = [
-  {
-    out: 'public/og.png',
-    url: `${SITE}/`,
-    title: 'QRForge',
-    titleSize: 124,
-    subtitle: 'Free QR code generator',
-    facts: '20 QR types  ·  8 export formats  ·  logos & presets',
-    urlText: 'qrforge-bd.vercel.app',
-  },
-  {
-    out: 'public/og/wifi-qr-code.png',
-    url: `${SITE}/wifi-qr-code/`,
-    title: 'WiFi QR code',
-    subtitle: 'Guests join in one scan',
-    facts: 'SSID  ·  password  ·  print size check',
-    urlText: 'qrforge-bd.vercel.app/wifi-qr-code',
-  },
-  {
-    out: 'public/og/vcard-qr-code.png',
-    url: `${SITE}/vcard-qr-code/`,
-    title: 'vCard QR code',
-    subtitle: 'The card that saves itself',
-    facts: 'name  ·  phone  ·  email  ·  company',
-    urlText: 'qrforge-bd.vercel.app/vcard-qr-code',
-  },
-  {
-    out: 'public/og/menu-qr-code.png',
-    url: `${SITE}/menu-qr-code/`,
-    title: 'Menu QR code',
-    subtitle: 'For restaurants and cafés',
-    facts: 'no subscription  ·  never expires',
-    urlText: 'qrforge-bd.vercel.app/menu-qr-code',
-  },
-  {
-    out: 'public/og/whatsapp-qr-code.png',
-    url: `${SITE}/whatsapp-qr-code/`,
-    title: 'WhatsApp QR code',
-    subtitle: 'Opens a chat instantly',
-    facts: 'prefilled message  ·  phone + desktop',
-    urlText: 'qrforge-bd.vercel.app/whatsapp-qr-code',
-  },
-  {
-    out: 'public/og/url-qr-code.png',
-    url: `${SITE}/url-qr-code/`,
-    title: 'URL QR code',
-    subtitle: 'Print-ready links',
-    facts: 'PNG  ·  SVG  ·  PDF  ·  A4 sheet',
-    urlText: 'qrforge-bd.vercel.app/url-qr-code',
-  },
+  HOME_CARD,
+  ...ROUTES.map((r) => {
+    const override = OVERRIDES[r.path] ?? {}
+    return {
+      out: `public/og${r.path}.png`,
+      url: `${SITE}${r.path}`,
+      title: override.title ?? (r.navLabel.includes('QR') ? r.navLabel : `${r.navLabel} QR code`),
+      subtitle: override.subtitle ?? firstSentence(r.lede),
+      facts: override.facts ?? 'free  ·  no sign-up  ·  nothing uploaded',
+      urlText: `qrforge-bd.vercel.app${r.path}`,
+    }
+  }),
 ]
 
 const dir = mkdtempSync(path.join(tmpdir(), 'qrforge-og-'))
@@ -99,22 +114,36 @@ function textWidth(text, pointsize, font = 'DejaVu-Sans-Bold') {
   }
 }
 
+/** Shrink, then truncate, so a subtitle can never slide under the QR card. */
+function fitLine(text, maxWidth, startSize, minSize, font = 'DejaVu-Sans') {
+  for (let size = startSize; size >= minSize; size -= 2) {
+    if (textWidth(text, size, font) <= maxWidth) return { text, size }
+  }
+  let out = text
+  while (out.length > 8 && textWidth(`${out}…`, minSize, font) > maxWidth) out = out.slice(0, -1)
+  return { text: `${out.trimEnd()}…`, size: minSize }
+}
+
 /**
  * Auto-fit a title: one line if it can be large, otherwise two balanced lines.
  * Returns the lines plus the pointsize to draw them at.
  */
 function fitTitle(text, maxWidth) {
   const words = text.split(' ')
-  if (words.length > 1) {
-    for (let size = 124; size >= 58; size -= 2) {
-      if (textWidth(text, size) <= maxWidth) {
-        // A tiny single line looks worse than two big ones — go two-line below 74px.
-        if (size >= 74) return { lines: [text], size }
-        break
-      }
+
+  // One word: let it grow as large as it fits.
+  if (words.length === 1) {
+    for (let size = 124; size >= 48; size -= 2) {
+      if (textWidth(text, size) <= maxWidth) return { lines: [text], size }
     }
+    return { lines: [text], size: 48 }
   }
-  // two lines: split at the word boundary that balances the widths best
+
+  // Several words: a single line down to 74px, then two balanced lines.
+  for (let size = 124; size >= 74; size -= 2) {
+    if (textWidth(text, size) <= maxWidth) return { lines: [text], size }
+  }
+
   let best = { lines: [text], size: 58 }
   let bestScore = Infinity
   for (let i = 1; i < words.length; i++) {
@@ -168,6 +197,9 @@ for (const card of CARDS) {
   writeFileSync(mvgPath, `fill ${INK}\n${rects.join('\n')}\n`)
 
   const maxTitleWidth = CARD_X - 78 - 24
+  const sub = fitLine(card.subtitle, maxTitleWidth, 38, 22)
+  const facts = fitLine(card.facts, maxTitleWidth, 25, 18)
+  const urlLine = fitLine(card.urlText, maxTitleWidth, 23, 16, 'DejaVu-Sans-Mono')
   const fit = card.titleSize ? { lines: [card.title], size: card.titleSize } : fitTitle(card.title, maxTitleWidth)
   const lineGap = Math.round(fit.size * 0.98)
   const titleY = fit.lines.length > 1 ? 260 : card.size > 100 ? 310 : 292
@@ -185,14 +217,14 @@ for (const card of CARDS) {
     '-font', 'DejaVu-Sans-Bold', '-pointsize', String(fit.size), '-fill', INK,
     ...fit.lines.flatMap((line, i) => ['-annotate', '+78+' + (titleY + i * lineGap), line]),
 
-    '-font', 'DejaVu-Sans', '-pointsize', '38', '-fill', BODY,
-    '-annotate', '+82+' + (titleY + (fit.lines.length - 1) * lineGap + 62), card.subtitle,
+    '-font', 'DejaVu-Sans', '-pointsize', String(sub.size), '-fill', BODY,
+    '-annotate', '+82+' + (titleY + (fit.lines.length - 1) * lineGap + 60), sub.text,
 
-    '-font', 'DejaVu-Sans', '-pointsize', '25', '-fill', MUTED,
-    '-annotate', '+82+' + (titleY + (fit.lines.length - 1) * lineGap + 116), card.facts,
+    '-font', 'DejaVu-Sans', '-pointsize', String(facts.size), '-fill', MUTED,
+    '-annotate', '+82+' + (titleY + (fit.lines.length - 1) * lineGap + 108), facts.text,
 
-    '-font', 'DejaVu-Sans-Mono', '-pointsize', '23', '-fill', ACCENT,
-    '-annotate', '+82+520', card.urlText,
+    '-font', 'DejaVu-Sans-Mono', '-pointsize', String(urlLine.size), '-fill', ACCENT,
+    '-annotate', '+82+520', urlLine.text,
 
     // card + real QR
     '-fill', '#ffffff', '-draw', `roundrectangle ${CARD_X},${CARD_Y} ${CARD_X + CARD},${CARD_Y + CARD} 22,22`,
