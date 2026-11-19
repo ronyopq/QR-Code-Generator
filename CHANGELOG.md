@@ -4,6 +4,37 @@ All notable changes to QRForge are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] — 2026-11-19
+
+### Added
+- **Five static landing pages** — `/wifi-qr-code`, `/vcard-qr-code`, `/menu-qr-code`,
+  `/whatsapp-qr-code`, `/url-qr-code`. Each is a real URL with its own `<title>`, description,
+  canonical, 1200×630 OG card, breadcrumb, type-specific `<h1>`, 400–700 words of copy, a
+  four-step how-to and four FAQs. They ship with **no JavaScript bundle at all** (CSS + HTML
+  only), so they load in one round trip on any phone.
+- `src/marketing/routes.ts` — the single route table. The build renders a page per entry, adds it
+  to `sitemap.xml` and lists it in `llms.txt`; nothing else needs editing.
+- `src/marketing/LandingPage.tsx`, `Chrome.tsx` (shared header/footer/CTA) and `document.ts`
+  (complete document with absolute canonical/OG and `../assets/…` links that work on both the
+  Vercel root and a GitHub Pages subpath).
+- Per-page structured data: `WebPage` + `BreadcrumbList` + `HowTo` + `FAQPage`, cross-referenced
+  to the home graph by absolute `@id`.
+- `public/og/<page>.png` — five more social cards, each carrying a **real QR of that page**.
+  `scripts/og-image.mjs` now auto-fits long titles (two lines at 96 px instead of one at 60 px).
+- **`?type=` deep links** (`src/lib/deepLink.ts`) — every landing page's CTA opens the studio with
+  that format preselected. Unknown or missing values safely fall back to the default config.
+- Home page now links to the guides: a "Guides by QR code type" section in the crawlable shell and
+  a compact link row in the app, so internal linking survives hydration.
+- 20 new tests (94 total): route-table integrity, SERP-length limits, ≥350 words per page, unique
+  titles/H1s, valid cross-links, `GUIDES` ↔ `LANDING_ROUTES` sync, sitemap coverage, per-page
+  document shape, no-JS guarantee, HTML escaping and JSON-LD escaping.
+
+### Changed
+- Canonical URLs are slash-free (`/wifi-qr-code`) to match `trailingSlash: false` on Vercel, so a
+  canonical never redirects to a different URL.
+- The static shell's header/footer now come from the shared `Chrome` components, so the home page
+  and the landing pages can never drift apart visually.
+
 ## [1.5.0] — 2026-11-19
 
 ### Added

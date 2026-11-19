@@ -17,6 +17,8 @@ import { REPO } from '../data/repo'
 import { QR_TYPES } from '../data/qrTypes'
 import { FAQ, FEATURES, HOW_TO, SITE, SUMMARY } from './content'
 import { typesByCategory } from './structuredData'
+import { LANDING_ROUTES } from './routes'
+import { SiteFooter, SiteHeader } from './Chrome'
 
 export default function StaticShell() {
   const groups = typesByCategory()
@@ -30,17 +32,7 @@ export default function StaticShell() {
         Skip to content
       </a>
 
-      <header className="border-b border-line">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-          <span className="font-mono text-[13px] font-semibold tracking-[0.14em] text-fg">QRFORGE</span>
-          <nav aria-label="Primary" className="flex items-center gap-4 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
-            <a className="hover:text-fg" href="#types">Types</a>
-            <a className="hover:text-fg" href="#how-to">How to</a>
-            <a className="hover:text-fg" href="#faq">FAQ</a>
-            <a className="hover:text-fg" href={REPO.url} rel="noreferrer">Source</a>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader home="./" />
 
       <main id="content" className="mx-auto max-w-5xl px-4 pb-16">
         <section className="pt-10 sm:pt-14">
@@ -123,6 +115,26 @@ export default function StaticShell() {
           </div>
         </section>
 
+        <section id="guides" className="mt-14">
+          <h2 className="text-[20px] font-semibold tracking-[-0.02em] sm:text-[24px]">Guides by QR code type</h2>
+          <p className="mt-2 max-w-2xl text-[13.5px] leading-relaxed text-muted">
+            One page per type: what it holds, how big to print it, and where it actually gets used.
+          </p>
+          <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+            {LANDING_ROUTES.map((r) => (
+              <li key={r.path}>
+                <a
+                  href={`./${r.path.replace(/^\//, "")}`}
+                  className="block rounded-xl border border-line bg-surface p-4 transition-colors hover:border-line-strong"
+                >
+                  <span className="block text-[13.5px] font-semibold text-fg">{r.navLabel}</span>
+                  <span className="mt-1 block text-[12.5px] leading-relaxed text-muted">{r.description}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+
         <section id="about" className="mt-14 rounded-xl border border-line bg-surface p-5">
           <h2 className="text-[16px] font-semibold text-fg">Built by {DEVELOPER.name}</h2>
           <p className="mt-2 max-w-2xl text-[12.5px] leading-relaxed text-muted">
@@ -138,14 +150,7 @@ export default function StaticShell() {
         </section>
       </main>
 
-      <footer className="border-t border-line">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2 px-4 py-6 font-mono text-[10px] uppercase tracking-[0.14em] text-subtle">
-          <span>{SITE.name} · free forever · MIT · no backend</span>
-          <span>
-            <a className="hover:text-fg" href={REPO.url} rel="noreferrer">source</a>
-          </span>
-        </div>
-      </footer>
+      <SiteFooter home="./" />
     </div>
   )
 }
