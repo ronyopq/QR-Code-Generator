@@ -1,7 +1,7 @@
 {
   "name": "QRForge \u2014 Enterprise QR Code Generator",
   "short_name": "QRForge",
-  "description": "Designer-grade QR codes \u2014 20 formats, 7 export types, 100% in your browser.",
+  "description": "Free QR code generator \u2014 20 QR types, 8 export formats, logos and presets. Nothing leaves your browser.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

@@ -3,37 +3,65 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>QRForge — Free QR Code Generator | URL, WiFi, vCard, Menu &amp; 20+ Types</title>
-    <meta name="description" content="Create beautiful branded QR codes in seconds. 20+ types — URL, WiFi, WhatsApp, vCard, menu, event & more. Custom colors, logos, PNG/SVG/PDF export. Free, private, works offline." />
-    <meta name="keywords" content="qr code generator, qr code maker, wifi qr, vcard qr, menu qr, whatsapp qr, free qr code, qr code styling" />
-    <meta name="author" content="QRForge" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://ronyopq.github.io/QR-Code-Generator/" />
-    <!-- Open Graph -->
+
+    <!-- Primary meta ------------------------------------------------------- -->
+    <title>QRForge — Free QR Code Generator with Logo &amp; 20 Types</title>
+    <meta
+      name="description"
+      content="Free QR code generator for URL, WiFi, vCard, menu, WhatsApp and 16 more types. Add a logo, pick a preset, export PNG, SVG or PDF. No sign-up, no tracking."
+    />
+    <meta name="keywords" content="qr code generator, free qr code generator, qr code with logo, wifi qr code, vcard qr code, menu qr code, whatsapp qr code, qr code maker, qr code generator free forever" />
+    <meta name="author" content="Rony Siddiqi" />
+    <meta name="application-name" content="QRForge" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <link rel="canonical" href="https://qrforge-bd.vercel.app/" />
+    <link rel="alternate" hreflang="en" href="https://qrforge-bd.vercel.app/" />
+    <link rel="alternate" hreflang="x-default" href="https://qrforge-bd.vercel.app/" />
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://qrforge-bd.vercel.app/sitemap.xml" />
+
+    <!-- Open Graph --------------------------------------------------------- -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="QRForge — Enterprise QR Code Generator" />
-    <meta property="og:description" content="20+ QR types, custom branding, HD export. Free forever, no sign-up, works offline." />
-    <meta property="og:image" content="./icons/icon-512.png" />
-    <meta property="og:url" content="https://ronyopq.github.io/QR-Code-Generator/" />
-    <!-- Twitter -->
+    <meta property="og:site_name" content="QRForge" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content="QRForge — Free QR Code Generator with Logo &amp; 20 Types" />
+    <meta property="og:description" content="20 QR types, custom branding, HD export. Free forever, no sign-up, no tracking, works offline." />
+    <meta property="og:url" content="https://qrforge-bd.vercel.app/" />
+    <meta property="og:image" content="https://qrforge-bd.vercel.app/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="QRForge — free QR code generator with 20 types and 8 export formats" />
+
+    <!-- Twitter / X -------------------------------------------------------- -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="QRForge — QR Code Generator" />
-    <meta name="twitter:description" content="Create beautiful branded QR codes in seconds. Free & offline-ready." />
-    <meta name="twitter:image" content="./icons/icon-512.png" />
-    <!-- PWA / theme -->
+    <meta name="twitter:site" content="@RonySiddiqi" />
+    <meta name="twitter:creator" content="@RonySiddiqi" />
+    <meta name="twitter:title" content="QRForge — Free QR Code Generator" />
+    <meta name="twitter:description" content="Create branded QR codes in seconds. 20 types, logos, presets. Free, private, offline." />
+    <meta name="twitter:image" content="https://qrforge-bd.vercel.app/og.png" />
+    <meta name="twitter:image:alt" content="QRForge — free QR code generator with 20 types and 8 export formats" />
+
+    <!-- PWA / theme -------------------------------------------------------- -->
     <meta name="theme-color" content="#f7f7f4" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#07080a" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="light dark" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="QRForge" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <link rel="apple-touch-icon" href="./icons/icon-192.png" />
     <link rel="manifest" href="./manifest.webmanifest" />
-    <!-- Structured data -->
-    <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"SoftwareApplication","name":"QRForge QR Code Generator","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
-    </script>
+
+    <!--
+      Structured data. The full @graph (WebSite, Organization, Person,
+      SoftwareApplication, FAQPage, HowTo) is generated from
+      src/marketing/content.ts at build time by scripts/prerender.mjs, which
+      replaces this marker. Keeping one source of truth means the visible copy
+      and the machine-readable copy can never drift apart.
+    -->
+    <!-- SEO_JSONLD -->
+
     <!-- Critical paint: correct canvas colour before the stylesheet resolves -->
     <style>
       html { background: #f7f7f4; color-scheme: light dark; }
@@ -56,8 +84,13 @@
         }
       })();
     </script>
+    <!-- #root is pre-filled with crawlable HTML at build time (see scripts/prerender.mjs) -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <noscript><div style="padding:2rem;font-family:sans-serif">QRForge needs JavaScript enabled. Please enable it to generate QR codes.</div></noscript>
+    <noscript>
+      <div style="padding: 1.5rem; font-family: system-ui, sans-serif; line-height: 1.6; border-top: 1px solid #e5e5df">
+        <p><strong>JavaScript is off.</strong> The overview above is static; enable JavaScript to use the generator itself — it runs entirely in your browser.</p>
+      </div>
+    </noscript>
   </body>
 </html>

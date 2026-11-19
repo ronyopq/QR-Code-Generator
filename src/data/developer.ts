@@ -58,7 +58,7 @@ export const DEVELOPER = {
       url: 'https://ronysiddiqi.wordpress.com', hint: 'Portfolio & articles', color: '#21759B',
     },
   ] as SocialLink[],
-  site: 'https://qrforge-gamma-five.vercel.app',
+  site: 'https://qrforge-bd.vercel.app',
 }
 
 /** vCard 3.0 — scanning this saves the contact straight into the phone. */

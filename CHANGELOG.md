@@ -4,6 +4,42 @@ All notable changes to QRForge are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] — 2026-11-19
+
+### Added
+- **Crawlable static shell.** `src/marketing/StaticShell.tsx` is rendered to HTML at build time and
+  injected into `#root`, so search engines and AI answer engines that never run JavaScript still
+  read the headline, all 20 types, the feature list, the how-to and the FAQ. React clears the
+  shell and paints the studio on boot (`src/main.tsx`).
+- **One JSON-LD `@graph`** — WebSite, Organization, Person (Rony Siddiqi with every real profile as
+  `sameAs`), SoftwareApplication (free, MIT, versioned from `package.json`, feature list, repo),
+  FAQPage and HowTo — all generated from `src/marketing/content.ts`.
+- **Generated `robots.txt`, `sitemap.xml` and `llms.txt`** with absolute URLs, and explicit
+  `Allow` rules for GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot, Claude-Web, PerplexityBot,
+  Google-Extended, Applebot-Extended, CCBot and Bingbot.
+- **Real 1200×630 social card** (`public/og.png`) containing a scannable QR, built by
+  `scripts/og-image.mjs` (ImageMagick + the project's own QR library — no canvas, no headless
+  browser, works in CI).
+- `vercel.json`: canonical-host 308 redirect from the old alias, immutable asset caching,
+  `must-revalidate` for `index.html` and `sw.js`, plus HSTS / `nosniff` / `Referrer-Policy` /
+  `Permissions-Policy` headers.
+- **In-app FAQ + how-to** (`src/components/FaqSection.tsx`) at the bottom of the studio, rendering the
+  same `content.ts` copy — so the FAQPage/HowTo schema describes content a visitor can actually read
+  on the rendered page, not only in the static HTML.
+- 15 SEO tests: title and description lengths, absolute-URL rules, graph shape, FAQ parity,
+  creator `sameAs`, script-tag escaping, and the shell's `<h1>`/type/FAQ coverage.
+
+### Changed
+- **Canonical host is `https://qrforge-bd.vercel.app`** — `canonical`, `og:url`, `og:image`,
+  sitemap, JSON-LD and `developer.ts` all agree. `qrforge.vercel.app` and
+  `qrforge-app.vercel.app` belong to other Vercel projects (409 Conflict), so they are not used.
+- `<title>` trimmed from 84 to 53 characters and the description to 155, so nothing is truncated
+  in a SERP; `og:image` is absolute and correctly sized; `og:site_name`, `og:locale`,
+  `twitter:site`/`creator` and image dimensions added.
+- `npm run build` now ends with `node scripts/prerender.mjs`; `npm run seo` reruns it alone.
+  The step fails the build on title overflow, an empty shell or invalid JSON-LD.
+- `manifest.webmanifest` no longer claims "20 formats, 7 export types" — it says 20 types, 8 formats.
+
 ## [1.4.0] — 2026-11-19
 
 ### Removed

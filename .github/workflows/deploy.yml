@@ -37,6 +37,16 @@ jobs:
       - name: Build
         run: npm run build
 
+      # IndexNow: one ping tells Bing, Yandex, Seznam and Naver that the canonical
+      # site changed. The key file lives at public/8663236961611d6f1aa351a2dc7d9031.txt and is served from
+      # the site root, which is what the API verifies against.
+      - name: Ping IndexNow
+        if: github.ref == 'refs/heads/main'
+        run: |
+          curl -sS -m 20 "https://api.indexnow.org/indexnow?url=https://qrforge-bd.vercel.app/&key=8663236961611d6f1aa351a2dc7d9031" \
+            && echo "::notice title=IndexNow::Pinged Bing with the canonical URL." \
+            || echo "::warning title=IndexNow::Ping failed (non-fatal)."
+
       # GitHub Pages has to be switched on once by a repository admin
       # (Settings → Pages → Source: GitHub Actions). Until then the build still
       # runs and its artifact is kept, we simply skip the publish steps so the
