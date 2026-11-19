@@ -59,7 +59,7 @@ export default function HistoryPanel({ items, onLoad, onDelete, onToggleFav, onR
           {filtered.map((item) => (
             <div
               key={item.id}
-              className="group flex flex-col rounded-2xl border border-line bg-surface p-3.5 transition-colors hover:border-line-strong :border-line-strong"
+              className="group flex flex-col rounded-2xl border border-line bg-surface p-3.5 transition-colors hover:border-line-strong "
             >
               <div className="flex items-start gap-2">
                 <div className="min-w-0 flex-1">

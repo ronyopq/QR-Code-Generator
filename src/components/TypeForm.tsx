@@ -22,7 +22,7 @@ export default function TypeForm({ config, onChange }: Props) {
         right: (
           <button
             onClick={() => onChange({ fields: { ...def.sample } })}
-            className="flex items-center gap-1 rounded-md px-1.5 py-1 font-mono text-[10px] uppercase tracking-wide text-muted transition-colors hover:bg-inset hover:text-fg :bg-inset"
+            className="flex items-center gap-1 rounded-md px-1.5 py-1 font-mono text-[10px] uppercase tracking-wide text-muted transition-colors hover:bg-inset hover:text-fg "
           >
             <RotateCcw size={11} /> sample
           </button>

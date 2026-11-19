@@ -1,6 +1,6 @@
 import { Command } from 'cmdk'
 import {
-  BarChart3, Bookmark, Copy, Download, FileSpreadsheet, History, LayoutTemplate, Moon,
+  BarChart3, Bookmark, Copy, Download, FileSpreadsheet, Heart, History, LayoutTemplate, Moon,
   QrCode, Save, Search, Smartphone, Sun, type LucideIcon,
 } from 'lucide-react'
 import { QR_TYPES } from '../data/qrTypes'
@@ -20,6 +20,7 @@ interface Props {
   onInstall: () => void
   onBookmark: () => void
   onCredits: () => void
+  onDeveloper: () => void
   dark: boolean
 }
 
@@ -28,7 +29,7 @@ const TYPE_ICONS: Record<string, LucideIcon> = {
 }
 
 export default function CommandPalette({
-  open, onOpenChange, onNavigate, onPickType, onSave, onDownload, onCopy, onToggleTheme, onInstall, onBookmark, onCredits, dark,
+  open, onOpenChange, onNavigate, onPickType, onSave, onDownload, onCopy, onToggleTheme, onInstall, onBookmark, onCredits, onDeveloper, dark,
 }: Props) {
   const item = 'flex items-center gap-2.5 rounded-lg px-2.5 py-2 font-sans text-[12.5px] text-muted outline-none '
   const group = 'px-1 pb-1 pt-2 font-mono text-[9.5px] font-semibold uppercase tracking-[0.16em] text-subtle '
@@ -47,7 +48,7 @@ export default function CommandPalette({
         <Command.Input
           autoFocus
           placeholder="Search actions, QR types, pages…"
-          className="w-full bg-transparent font-sans text-[13px] text-fg outline-none placeholder:text-subtle :text-subtle"
+          className="w-full bg-transparent font-sans text-[13px] text-fg outline-none placeholder:text-subtle "
         />
         <kbd className="kbd">ESC</kbd>
       </div>
@@ -97,6 +98,9 @@ export default function CommandPalette({
           <Command.Item value="install app pwa" onSelect={run(onInstall)} className={item}><Smartphone size={14} className="text-muted" /> Install app</Command.Item>
           <Command.Item value="bookmark save site" onSelect={run(onBookmark)} className={item}><Bookmark size={14} className="text-muted" /> Bookmark QRForge</Command.Item>
           <Command.Item value="credits open source libraries" onSelect={run(onCredits)} className={item}><Sparkle /> Credits &amp; licences</Command.Item>
+          <Command.Item value="developer rony siddiqi profile contact about" onSelect={run(onDeveloper)} className={item}>
+            <Heart size={14} className="text-danger" /> Developer profile
+          </Command.Item>
         </Command.Group>
       </Command.List>
 

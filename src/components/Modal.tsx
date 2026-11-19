@@ -10,10 +10,10 @@ interface Props {
   icon?: React.ReactNode
   children?: React.ReactNode
   footer?: React.ReactNode
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'xl'
 }
 
-const SIZES = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-2xl' }
+const SIZES = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-2xl', xl: 'max-w-3xl' }
 
 export default function Modal({ open, onClose, title, description, icon, children, footer, size = 'md' }: Props) {
   const panelRef = useRef<HTMLDivElement>(null)
@@ -56,9 +56,9 @@ export default function Modal({ open, onClose, title, description, icon, childre
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`relative w-full ${SIZES[size]} animate-pop overflow-hidden rounded-2xl border border-line bg-surface shadow-pop  `}
+        className={`relative flex max-h-[calc(100dvh-1.5rem)] w-full flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-pop sm:max-h-[calc(100dvh-3rem)] ${SIZES[size]} animate-pop`}
       >
-        <div className="flex items-start gap-3 border-b border-line p-4">
+        <div className="flex shrink-0 items-start gap-3 border-b border-line p-4">
           {icon && <div className="mt-0.5 text-accent-strong">{icon}</div>}
           <div className="min-w-0 flex-1">
             <h2 className="font-mono text-[12px] font-semibold uppercase tracking-[0.1em] text-fg">{title}</h2>
@@ -66,8 +66,10 @@ export default function Modal({ open, onClose, title, description, icon, childre
           </div>
           <button onClick={onClose} className="icon-btn !h-7 !w-7" aria-label="Close dialog"><X size={14} /></button>
         </div>
-        {children && <div className="p-4">{children}</div>}
-        {footer && <div className="flex flex-wrap justify-end gap-2 border-t border-line bg-elevated/50 p-3">{footer}</div>}
+        {children && (
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4">{children}</div>
+        )}
+        {footer && <div className="flex shrink-0 flex-wrap justify-end gap-2 border-t border-line bg-elevated/50 p-3">{footer}</div>}
       </div>
     </div>,
     document.body,

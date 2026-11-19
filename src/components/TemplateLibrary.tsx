@@ -12,7 +12,7 @@ export default function TemplateLibrary({ onApply }: { onApply: (cfg: QRConfig) 
           <button
             key={t.id}
             onClick={() => onApply(t.apply({} as QRConfig))}
-            className="group relative overflow-hidden rounded-2xl border border-line bg-surface text-left transition-colors hover:border-accent/40 :border-accent/40"
+            className="group relative overflow-hidden rounded-2xl border border-line bg-surface text-left transition-colors hover:border-accent/40 "
           >
             <div className={`relative flex h-28 items-center justify-center overflow-hidden bg-gradient-to-br ${t.gradient}`}>
               <div className="absolute inset-0 module-grid opacity-40" aria-hidden />
