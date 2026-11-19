@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - arena/14f2b8d0-qr-code-generator
+      - 'arena/**'
   workflow_dispatch:
 
 permissions:
