@@ -6,7 +6,16 @@ import StylesGuard from './components/StylesGuard'
 import '@fontsource-variable/ibm-plex-sans'
 import '@fontsource-variable/jetbrains-mono'
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+// The build prerenders a crawlable shell inside #root (scripts/prerender.mjs).
+// React owns that element, so drop the shell and paint in the same task — no
+// flash of empty page, and no duplicate <h1> once the studio is live.
+const container = document.getElementById('root')!
+if (container.dataset.prerendered === 'true') {
+  container.textContent = ''
+  delete container.dataset.prerendered
+}
+
+ReactDOM.createRoot(container).render(
   <React.StrictMode>
     <ErrorBoundary>
       <App />

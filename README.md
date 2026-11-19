@@ -13,7 +13,9 @@ no backend, no sign-up, no watermarks. Deploys free on **GitHub Pages**.
 - **Source code:** https://github.com/ronyopq/QR-Code-Generator — the app's GitHub icon (top bar),
   the left rail, the footer **source** link, the credits sheet and `⌘K → Source on GitHub`
   all point here (`src/data/repo.ts` is the single place to change it).
-- **Vercel (live now):** https://qrforge-gamma-five.vercel.app
+- **Canonical site:** https://qrforge-bd.vercel.app — every `canonical`, `og:url` and sitemap
+  entry points here. The old `qrforge-gamma-five.vercel.app` alias 308-redirects to it
+  (`vercel.json`), and the GitHub Pages copy defers to it through `rel="canonical"`.
 - **GitHub Pages:** https://ronyopq.github.io/QR-Code-Generator/ — the workflow
   (`.github/workflows/deploy.yml`) is ready; a repository admin only needs to set
   **Settings → Pages → Source: GitHub Actions** once. Until then the workflow builds,
@@ -93,6 +95,24 @@ completed, and a one-click PNG button next to the preview.
 - **Logo:** Upload, center, resize (10–50%), padding, remove — with error-correction guidance (use H for logos)
 - **Size:** 100–5000 px width/height, scale slider, margin/quiet-zone, error correction L/M/Q/H
 - **Quality:** HD, 2K, 4K, Print (300 DPI), Social Media
+
+### Built to be found — SEO and AI visibility
+The app is a single-page React bundle, which normally means crawlers see an empty `<div>`.
+QRForge ships a **prerendered shell** instead (see [SEO.md](./SEO.md)):
+
+- `scripts/prerender.mjs` renders `src/marketing/StaticShell.tsx` to HTML at build time and injects
+  it into `#root` — so Google, Bing, **GPTBot, ClaudeBot, PerplexityBot** and every social scraper
+  read the headline, all 20 types, the feature list, the four-step how-to and the full FAQ
+  without executing a line of JavaScript. React clears the shell and paints the studio on boot.
+- **One JSON-LD `@graph`** (WebSite · Organization · Person · SoftwareApplication · FAQPage ·
+  HowTo) generated from `src/marketing/content.ts`, so the machine-readable copy can never drift
+  from the visible copy. Absolute URLs only; no fake ratings, no invented reviews.
+- `robots.txt` and `sitemap.xml` are **generated** with absolute URLs, and the AI answer engines
+  are explicitly allowed. `llms.txt` gives assistants one plain-text source of truth.
+- A real **1200×630 social card** (`public/og.png`) with a working QR in it, built by
+  `scripts/og-image.mjs` from the same canonical URL.
+- The build **fails** if the `<title>` grows past 60 characters, if the shell loses its `<h1>` or
+  FAQ, or if the JSON-LD stops parsing — SEO regressions break CI, not rankings.
 
 ### One language, on purpose
 The interface is **English only** — no language switcher, no half-translated strings. A Bengali

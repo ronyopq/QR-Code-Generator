@@ -19,6 +19,7 @@ import Customizer from './components/Customizer'
 import StylePresets from './components/StylePresets'
 import DownloadPanel from './components/DownloadPanel'
 import ScanCheck from './components/ScanCheck'
+import FaqSection from './components/FaqSection'
 import BulkGenerator from './components/BulkGenerator'
 import HistoryPanel from './components/HistoryPanel'
 import TemplateLibrary from './components/TemplateLibrary'
@@ -441,6 +442,11 @@ function Shell() {
                       </article>
                     ))}
                   </section>
+
+                  {/* FAQ + how-to — the same copy the prerendered shell exposes to
+                      crawlers, visible here so the FAQPage/HowTo schema describes
+                      content a person can actually read (src/marketing/content.ts). */}
+                  <FaqSection />
                 </div>
               )}
 

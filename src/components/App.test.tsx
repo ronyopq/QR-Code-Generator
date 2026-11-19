@@ -3,6 +3,7 @@ import { act } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import QRCodeStyling from 'qr-code-styling'
 import App from '../App'
+import { FAQ, HOW_TO } from '../marketing/content'
 
 /** Render the real app into JSDOM and interact with it like a visitor. */
 async function mount() {
@@ -112,6 +113,15 @@ describe('App', () => {
     expect(app.text()).not.toMatch(/[\u0980-\u09FF]/)
     expect(app.$$('button').some((b) => /switch language|ভাষা/i.test(b.getAttribute('aria-label') || ''))).toBe(false)
     expect(localStorage.getItem('qrforge-lang')).toBeNull()
+    await app.unmount()
+  }, 20000)
+
+  it('shows the same FAQ and how-to that the static shell gives crawlers', async () => {
+    const app = await mount()
+    // parity: the structured data (FAQPage/HowTo) must describe visible content
+    for (const item of FAQ) expect(app.text()).toContain(item.q)
+    for (const step of HOW_TO.steps) expect(app.text()).toContain(step.name)
+    expect(app.$$('details').length).toBeGreaterThanOrEqual(FAQ.length)
     await app.unmount()
   }, 20000)
 
