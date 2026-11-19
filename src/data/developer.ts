@@ -118,7 +118,7 @@ export function buildSupportMessage(): string {
   return [
     'Hi Rony! I am using QRForge and need a hand.',
     '',
-    `• App: QRForge v1.0 (${d.theme} theme)`,
+    `• App: QRForge v${__APP_VERSION__} (${d.theme} theme)`,
     `• Device: ${d.os} · ${d.device}`,
     `• Browser: ${d.browser}`,
     `• Screen: ${d.screen} (viewport ${d.viewport})`,

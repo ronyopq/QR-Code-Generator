@@ -14,11 +14,16 @@ const BYTES: Record<QRConfig['errorCorrection'], number[]> = {
 
 export interface ScanIssue {
   id: 'contrast' | 'quiet' | 'module-size' | 'logo' | 'inverted' | 'density'
+  /** disambiguates the two logo checks and the two contrast severities in the dictionary */
+  code: string
   level: 'error' | 'warn'
+  /** English fallback; the UI renders issue.<code>.title / .detail from the dictionary */
   title: string
   detail: string
-  /** one-tap repair; a patch is applied to the config, a bare label is handled by the panel */
-  fix?: { label: string; patch?: Partial<QRConfig> }
+  /** values interpolated into the translated strings */
+  params: Record<string, string | number>
+  /** one-tap repair; a patch is applied to the config, a bare suggestion is handled by the panel */
+  fix?: { key: string; params?: Record<string, string | number>; patch?: Partial<QRConfig>; suggestMm?: number }
 }
 
 export interface ScanReport {
@@ -147,78 +152,91 @@ export function analyseScan(cfg: QRConfig, payload: string, physicalMm = 40): Sc
 
   if (contrast < 3) {
     issues.push({
-      id: 'contrast', level: 'error',
+      id: 'contrast', code: 'contrast.error', level: 'error',
       title: 'Almost no contrast',
       detail: `Modules and background differ by only ${contrast}:1. Cameras need at least 3:1, ideally 7:1.`,
+      params: { ratio: contrast },
       fix: cfg.bgMode === 'transparent'
-        ? { label: 'Use a white background', patch: { bgMode: 'solid', bgColor: '#ffffff' } }
-        : { label: 'Reset to black on white', patch: { colorMode: 'single', fgColor: '#000000', bgColor: '#ffffff', bgMode: 'solid' } },
+        ? { key: 'fix.whiteBackground', patch: { bgMode: 'solid', bgColor: '#ffffff' } }
+        : { key: 'fix.resetBlack', patch: { colorMode: 'single', fgColor: '#000000', bgColor: '#ffffff', bgMode: 'solid' } },
     })
   } else if (contrast < 4.5) {
     issues.push({
-      id: 'contrast', level: 'warn',
+      id: 'contrast', code: 'contrast.warn', level: 'warn',
       title: 'Low contrast',
       detail: `${contrast}:1 — above the floor but dim. Darker modules or a lighter background scan faster.`,
-      fix: { label: 'Darken the modules', patch: { colorMode: 'single', fgColor: '#111418' } },
+      params: { ratio: contrast },
+      fix: { key: 'fix.darken', patch: { colorMode: 'single', fgColor: '#111418' } },
     })
   }
 
   if (quietModules < MIN_QUIET_MODULES) {
     issues.push({
-      id: 'quiet', level: 'warn',
+      id: 'quiet', code: 'quiet', level: 'warn',
       title: 'Quiet zone too small',
       detail: `Margin is ${quietModules} modules. The spec asks for ${STANDARD_QUIET_MODULES} so scanners can find the code; leave white space around it when you print.`,
-      fix: { label: `Set margin to ${Math.ceil((STANDARD_QUIET_MODULES * cfg.width) / modules)}px`, patch: { margin: Math.ceil((STANDARD_QUIET_MODULES * cfg.width) / modules) } },
+      params: { modules: quietModules },
+      fix: {
+        key: 'fix.margin',
+        params: { px: Math.ceil((STANDARD_QUIET_MODULES * cfg.width) / modules) },
+        patch: { margin: Math.ceil((STANDARD_QUIET_MODULES * cfg.width) / modules) },
+      },
     })
   }
 
   if (moduleMm < 0.3) {
     issues.push({
-      id: 'module-size', level: 'error',
+      id: 'module-size', code: 'module-size.error', level: 'error',
       title: 'Modules too small to print',
       detail: `At ${sizeMm} mm each module is ${moduleMm} mm. Print at least ${minSizeMm} mm wide, or shorten the content.`,
-      fix: { label: `Suggest ${minSizeMm} mm` },
+      params: { mm: sizeMm, moduleMm, min: minSizeMm },
+      fix: { key: 'fix.suggestSize', params: { mm: minSizeMm }, suggestMm: minSizeMm },
     })
   } else if (moduleMm < MIN_MODULE_MM) {
     issues.push({
-      id: 'module-size', level: 'warn',
+      id: 'module-size', code: 'module-size.warn', level: 'warn',
       title: 'Small modules',
       detail: `Each module is ${moduleMm} mm at ${sizeMm} mm. Below ${MIN_MODULE_MM} mm home printers blur the edges.`,
+      params: { mm: sizeMm, moduleMm },
     })
   }
 
   if (cfg.logo && cfg.errorCorrection !== 'H' && cfg.logoSize > 0.2) {
     issues.push({
-      id: 'logo', level: 'warn',
+      id: 'logo', code: 'logo.ec', level: 'warn',
       title: 'Logo vs. error correction',
       detail: `A ${Math.round(cfg.logoSize * 100)}% logo covers part of the code; error correction is ${cfg.errorCorrection}. Use H for 30% recovery.`,
-      fix: { label: 'Use error correction H', patch: { errorCorrection: 'H' } },
+      params: { size: Math.round(cfg.logoSize * 100), ec: cfg.errorCorrection },
+      fix: { key: 'fix.useH', patch: { errorCorrection: 'H' } },
     })
   }
   if (cfg.logo && cfg.logoSize > 0.35) {
     issues.push({
-      id: 'logo', level: 'warn',
+      id: 'logo', code: 'logo.size', level: 'warn',
       title: 'Logo is very large',
       detail: `A logo covering ${Math.round(cfg.logoSize * 100)}% of the code risks unreadable modules even at H.`,
-      fix: { label: 'Shrink logo to 30%', patch: { logoSize: 0.3 } },
+      params: { size: Math.round(cfg.logoSize * 100) },
+      fix: { key: 'fix.shrinkLogo', patch: { logoSize: 0.3 } },
     })
   }
 
   if (inverted && contrast >= 3) {
     issues.push({
-      id: 'inverted', level: 'warn',
+      id: 'inverted', code: 'inverted', level: 'warn',
       title: 'Light modules on a dark background',
       detail: 'Many older scanners only read dark-on-light. Works on modern phones — test before printing.',
-      fix: { label: 'Invert to dark on light', patch: { colorMode: 'single', fgColor: '#111418', bgMode: 'solid', bgColor: '#ffffff' } },
+      params: {},
+      fix: { key: 'fix.invert', patch: { colorMode: 'single', fgColor: '#111418', bgMode: 'solid', bgColor: '#ffffff' } },
     })
   }
 
   if (modulePx < 3) {
     issues.push({
-      id: 'density', level: 'warn',
+      id: 'density', code: 'density', level: 'warn',
       title: 'Rendering is cramped',
       detail: `Only ${modulePx}px per module at ${cfg.width}px. Raise the export size or shorten the content.`,
-      fix: { label: 'Export at 1024px', patch: { width: 1024, height: 1024 } },
+      params: { px: modulePx, width: cfg.width },
+      fix: { key: 'fix.export1024', patch: { width: 1024, height: 1024 } },
     })
   }
 
@@ -228,7 +246,14 @@ export function analyseScan(cfg: QRConfig, payload: string, physicalMm = 40): Sc
   return { level, contrast, fg, bg, version, modules, modulePx, moduleMm, quietModules, minSizeMm, inverted, issues }
 }
 
-/** Cheap, user-facing one-liners for the panel header. */
+/** Where the panel header's one-liner comes from. */
+export function reportSummaryKey(report: ScanReport): { key: 'scan.ready' | 'scan.fail' | 'scan.warnOne' | 'scan.warnMany'; params?: Record<string, number> } {
+  if (report.level === 'pass') return { key: 'scan.ready' }
+  if (report.level === 'fail') return { key: 'scan.fail' }
+  return report.issues.length === 1 ? { key: 'scan.warnOne' } : { key: 'scan.warnMany', params: { n: report.issues.length } }
+}
+
+/** English one-liner (used by tests and any non-React consumer). */
 export function reportSummary(report: ScanReport): string {
   if (report.level === 'pass') return 'Ready to print'
   if (report.level === 'fail') return 'Will probably fail to scan'
